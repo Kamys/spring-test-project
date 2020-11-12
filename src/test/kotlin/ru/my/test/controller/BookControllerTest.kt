@@ -1,5 +1,6 @@
 package ru.my.test.controller
 
+import ApiValidationError
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -53,12 +54,9 @@ class BookControllerTest: AbstractIntegrationTest() {
             .andExpect(status().isOk)
             .andReturn();
 
-        val result = andReturn.asObject<Book>()
+        val result = andReturn.asObject<ApiValidationError>()
 
-        result.name.shouldBe(bookTitle)
-        val allBooks = bookRepository.findAll()
-        allBooks.size.shouldBe(1)
-        allBooks.first().name.shouldBe(bookTitle)
+        result.violations.first().field.shouldBe("name")
     }
 
     @Test
