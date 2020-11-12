@@ -7,9 +7,9 @@ import ru.my.test.entity.Book
 import ru.my.test.service.BookRepository
 
 @Component
-class ModelHelper(
-    @Autowired private val bookRepository: BookRepository,
-) {
+class ModelHelper {
+
+    @Autowired private lateinit var bookRepository: BookRepository
 
     private val faker = Faker()
 
