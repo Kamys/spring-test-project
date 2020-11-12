@@ -55,4 +55,15 @@ abstract class AbstractIntegrationTest {
             .content(content)
         return this.perform(mockHttpRequest)
     }
+
+    fun MockMvc.put(
+        url: String,
+        content: String = "",
+    ): ResultActions {
+        val mockHttpRequest = MockMvcRequestBuilders
+            .put(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content)
+        return this.perform(mockHttpRequest)
+    }
 }

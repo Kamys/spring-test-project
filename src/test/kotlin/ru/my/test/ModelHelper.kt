@@ -13,8 +13,8 @@ class ModelHelper {
 
     private val faker = Faker()
 
-    fun createBook(): Book {
-        val book = Book(name = faker.book().title())
+    fun createBook(name: String = faker.book().title()): Book {
+        val book = Book(name = name)
         bookRepository.save(book)
         return book
     }

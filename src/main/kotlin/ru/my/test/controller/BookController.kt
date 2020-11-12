@@ -18,6 +18,11 @@ class BookController(
         return bookService.getAll()
     }
 
+    @GetMapping("/{bookId}")
+    fun getBooks(@PathVariable("bookId") bookId: Int,): Any {
+        return bookService.getById(bookId)
+    }
+
     @PostMapping("/")
     fun createBook(@Valid @RequestBody request: BookAddRequest): BookView {
         return bookService.add(request)

@@ -8,12 +8,11 @@ class BookView(
 )
 
 class BookAddRequest(
-    @field:Size(min=3, max=10)
-    @field:NotNull(message = "stringValue has to be present")
+    @field:NotNull
     val name: String
 )
 
 class BookEditRequest(
-    @NotBlank(message = "Need field name")
+    @field:NotNull
     val name: String
 )

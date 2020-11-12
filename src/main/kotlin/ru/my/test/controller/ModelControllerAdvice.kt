@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
 class ModelControllerAdvice {
+
     @ExceptionHandler(value = [NotFoundException::class])
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun notFoundException(exception: NotFoundException): ApiError {
@@ -44,7 +45,7 @@ class ModelControllerAdvice {
         return ApiError(
             type = ErrorType.PROCESS_ERROR,
             status = HttpStatus.NOT_FOUND.value(),
-            title = "Неправильно сформирован JSON",
+            title = ApiError.ERROR_MESSAGES_JSON_NOT_VALID,
             detail = exception.message
         )
     }

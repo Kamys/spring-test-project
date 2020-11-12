@@ -33,6 +33,10 @@ class BookService(
         return bookRepository.delete(book)
     }
 
+    fun getById(bookId: Int): BookView {
+        return bookRepository.findOrException(bookId).toView()
+    }
+
     fun Book.toView(): BookView {
         return BookView(this.id, this.name)
     }

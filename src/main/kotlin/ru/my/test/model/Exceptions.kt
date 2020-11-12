@@ -17,7 +17,11 @@ open class ApiError(
     val status: Int,
     val title: String,
     val detail: String?
-)
+) {
+    companion object {
+        const val ERROR_MESSAGES_JSON_NOT_VALID = "Неправильно сформирован JSON"
+    }
+}
 
 class ApiValidationError(
     type: ErrorType = ErrorType.VALIDATION_ERROR,
