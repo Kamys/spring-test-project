@@ -6,7 +6,6 @@ import ru.my.test.model.BookAddRequest
 import ru.my.test.model.BookEditRequest
 import ru.my.test.model.BookView
 import ru.my.test.service.BookService
-import javax.validation.Valid
 
 @RestController
 @RequestMapping("/books")
