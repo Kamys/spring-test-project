@@ -105,7 +105,9 @@ class BookControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `return error "not found" if book for edit not exist`() {
-        mvc.put("/books/1").andExpect(status().isNotFound)
+        val request = BookEditRequest("Book new name")
+
+        mvc.put("/books/1", request.asJson()).andExpect(status().isNotFound)
     }
 
     @Test
