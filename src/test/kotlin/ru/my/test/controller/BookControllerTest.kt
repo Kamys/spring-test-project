@@ -129,6 +129,20 @@ class BookControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    fun deleteBook() {
+    fun `return error "not found" if book for delete not exist`() {
+        mvc.delete("/books/1").andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `return status "Ok" if book deleted`() {
+        val bookForDelete = modelHelper.createBook()
+        val book = modelHelper.createBook()
+
+        mvc.delete("/books/${bookForDelete.id}").andExpect(status().isOk)
+
+        val allBook = bookRepository.findAll()
+        allBook.size.shouldBe(1)
+        allBook.first().id.shouldBe(book.id)
+        allBook.first().name.shouldBe(book.name)
     }
 }

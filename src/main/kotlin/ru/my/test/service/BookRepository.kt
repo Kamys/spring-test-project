@@ -18,6 +18,6 @@ interface BookRepository : JpaRepository<Book, Int> {
 
 fun BookRepository.findOrException(id: Int): Book {
     return this.findById(id).orElseThrow {
-        NotFoundException("Failed find book with id=$id")
+        NotFoundException("Не удалось найти книгу с id: $id")
     }
 }

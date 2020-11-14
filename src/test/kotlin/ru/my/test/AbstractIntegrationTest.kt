@@ -66,4 +66,13 @@ abstract class AbstractIntegrationTest {
             .content(content)
         return this.perform(mockHttpRequest)
     }
+
+    fun MockMvc.delete(
+        url: String,
+    ): ResultActions {
+        val mockHttpRequest = MockMvcRequestBuilders
+            .delete(url)
+            .contentType(MediaType.APPLICATION_JSON)
+        return this.perform(mockHttpRequest)
+    }
 }
