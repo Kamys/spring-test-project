@@ -29,10 +29,9 @@ class ModelHelper {
     }
 
     fun createAuthor(
-        name: String = faker.book().author(),
-        dateOfBirth: OffsetDateTime = generateBirthday()
+        name: String = faker.book().author()
     ): Author {
-        val author = Author(name = name, dateOfBirth = dateOfBirth)
+        val author = Author(name = name)
         authorRepository.save(author)
         return author
     }

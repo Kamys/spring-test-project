@@ -1,11 +1,7 @@
 package ru.my.test.entity
 
 import java.time.OffsetDateTime
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.Entity
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "authors")
@@ -14,7 +10,13 @@ class Author(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int = 0,
     var name: String,
-    val dateOfBirth: OffsetDateTime,
+    @ManyToMany
+    @JoinTable (
+        name = "author_book",
+        joinColumns = [JoinColumn(name = "author_id")],
+        inverseJoinColumns = [JoinColumn(name = "book_id")]
+    )
+    var books: List<Book> = emptyList()
 ) {
 
 }

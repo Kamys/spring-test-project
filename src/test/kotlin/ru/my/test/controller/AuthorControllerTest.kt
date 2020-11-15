@@ -27,7 +27,6 @@ class AuthorControllerTest : AbstractIntegrationTest() {
     private fun Author.shouldEquals(author: Author) {
         this.id.shouldBe(author.id)
         this.name.shouldBe(author.name)
-        this.dateOfBirth.shouldBe(author.dateOfBirth)
         // TODO: shouldBe booksIds
         // this.booksIds.shouldBe(author.booksIds)
     }
@@ -86,8 +85,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
     @Test
     fun `return created author`() {
         val authorTitle = faker.book().author()
-        val dateOfBirth = modelHelper.generateBirthday()
-        val authorRequest = AuthorAddRequest(authorTitle, dateOfBirth, emptyList())
+        val authorRequest = AuthorAddRequest(authorTitle, emptyList())
 
         val andReturn = mvc.post("/authors/", authorRequest.asJson())
             .andExpect(status().isOk)
@@ -114,7 +112,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `return error "not found" if author for edit not exist`() {
-        val request = AuthorEditRequest("Author new name", modelHelper.generateBirthday(), emptyList())
+        val request = AuthorEditRequest("Author new name", emptyList())
 
         mvc.put("/authors/1", request.asJson()).andExpect(status().isNotFound)
     }
@@ -124,7 +122,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
         val editedAuthor = modelHelper.createAuthor("Author old name")
         val authorSecond = modelHelper.createAuthor()
 
-        val request = AuthorEditRequest("Author new name", editedAuthor.dateOfBirth, emptyList())
+        val request = AuthorEditRequest("Author new name", emptyList())
 
         val andReturn = mvc.put("/authors/${editedAuthor.id}", request.asJson())
             .andExpect(status().isOk)

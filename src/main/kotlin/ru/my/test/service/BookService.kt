@@ -2,7 +2,9 @@ package ru.my.test.service
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import ru.my.test.entity.Author
 import ru.my.test.entity.Book
+import ru.my.test.model.AuthorView
 import ru.my.test.model.BookAddRequest
 import ru.my.test.model.BookEditRequest
 import ru.my.test.model.BookView
@@ -38,6 +40,10 @@ class BookService(
     }
 
     fun Book.toView(): BookView {
-        return BookView(this.id, this.name)
+        return BookView(this.id, this.name, this.authors.map { it.toView() })
+    }
+
+    fun Author.toView(): AuthorView {
+        return AuthorView(this.id, this.name)
     }
 }
