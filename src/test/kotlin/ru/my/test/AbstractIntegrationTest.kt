@@ -10,6 +10,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.*
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import ru.my.test.entity.BaseEntity
 import java.nio.charset.StandardCharsets
 
 @SpringBootTest(classes = [Application::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -38,6 +39,11 @@ abstract class AbstractIntegrationTest {
     }
 
     fun Any.asJson(): String = objectMapper.writeValueAsString(this)
+
+    @Throws(NullPointerException::class)
+    fun <T> Iterable<T>.findOrException(predicate: (T) -> Boolean): T {
+        return this.find(predicate) ?: throw NullPointerException("Failed find element")
+    }
 
     fun MockMvc.get(
         url: String,

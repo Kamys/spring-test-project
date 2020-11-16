@@ -18,8 +18,11 @@ class ModelHelper {
 
     private val faker = Faker()
 
-    fun createBook(name: String = faker.book().title()): Book {
-        val book = Book(name = name)
+    fun createBook(
+        name: String = faker.book().title(),
+        authors: List<Author> = emptyList()
+    ): Book {
+        val book = Book(name = name, authors = authors)
         bookRepository.save(book)
         return book
     }
@@ -35,5 +38,4 @@ class ModelHelper {
         authorRepository.save(author)
         return author
     }
-
 }

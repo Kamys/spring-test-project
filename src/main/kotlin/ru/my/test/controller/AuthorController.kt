@@ -10,7 +10,7 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/authors")
 class AuthorController(
-        private var authorService: AuthorService
+    private var authorService: AuthorService
 ) {
 
     @GetMapping("/")
@@ -19,7 +19,7 @@ class AuthorController(
     }
 
     @GetMapping("/{authorId}")
-    fun getAuthors(@PathVariable("authorId") authorId: Int,): Any {
+    fun getAuthors(@PathVariable("authorId") authorId: Int): Any {
         return authorService.getById(authorId)
     }
 
@@ -30,15 +30,15 @@ class AuthorController(
 
     @PutMapping("/{authorId}")
     fun editAuthor(
-            @PathVariable("authorId") authorId: Int,
-            @RequestBody @Valid request: AuthorEditRequest
+        @PathVariable("authorId") authorId: Int,
+        @RequestBody @Valid request: AuthorEditRequest
     ): AuthorView {
         return authorService.edit(authorId, request)
     }
 
     @DeleteMapping("/{authorId}")
     fun deleteAuthor(
-            @PathVariable("authorId") authorId: Int
+        @PathVariable("authorId") authorId: Int
     ) {
         authorService.delete(authorId)
     }

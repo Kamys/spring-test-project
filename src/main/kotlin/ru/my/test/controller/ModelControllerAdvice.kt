@@ -2,6 +2,7 @@ package ru.my.test.controller
 
 import ApiError
 import ApiValidationError
+import ErrorType
 import Violation
 import javassist.NotFoundException
 import org.springframework.http.HttpStatus
@@ -22,10 +23,10 @@ class ModelControllerAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun notFoundException(exception: NotFoundException): ApiError {
         return ApiError(
-                type = ErrorType.PROCESS_ERROR,
-                status = HttpStatus.NOT_FOUND.value(),
-                title = "Ресурс не найден",
-                detail = exception.message
+            type = ErrorType.PROCESS_ERROR,
+            status = HttpStatus.NOT_FOUND.value(),
+            title = "Ресурс не найден",
+            detail = exception.message
         )
     }
 

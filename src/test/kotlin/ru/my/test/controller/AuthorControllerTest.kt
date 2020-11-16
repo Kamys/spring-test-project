@@ -13,6 +13,7 @@ import ru.my.test.model.AuthorAddRequest
 import ru.my.test.model.AuthorEditRequest
 import ru.my.test.service.AuthorRepository
 import ru.my.test.service.findOrException
+import javax.transaction.Transactional
 
 
 class AuthorControllerTest : AbstractIntegrationTest() {
@@ -22,13 +23,6 @@ class AuthorControllerTest : AbstractIntegrationTest() {
     @BeforeEach
     fun beforeEach() {
         authorRepository.deleteAll()
-    }
-
-    private fun Author.shouldEquals(author: Author) {
-        this.id.shouldBe(author.id)
-        this.name.shouldBe(author.name)
-        // TODO: shouldBe booksIds
-        // this.booksIds.shouldBe(author.booksIds)
     }
 
     @Test

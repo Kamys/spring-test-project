@@ -10,35 +10,35 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/books")
 class BookController(
-        private var bookService: BookService
+    private var bookService: BookService
 ) {
 
-    @GetMapping("/")
+    @GetMapping
     fun getBooks(): Any {
         return bookService.getAll()
     }
 
     @GetMapping("/{bookId}")
-    fun getBooks(@PathVariable("bookId") bookId: Int,): Any {
+    fun getBooks(@PathVariable("bookId") bookId: Int): Any {
         return bookService.getById(bookId)
     }
 
-    @PostMapping("/")
+    @PostMapping
     fun createBook(@Valid @RequestBody request: BookAddRequest): BookView {
         return bookService.add(request)
     }
 
     @PutMapping("/{bookId}")
     fun editBook(
-            @PathVariable("bookId") bookId: Int,
-            @RequestBody @Valid request: BookEditRequest
+        @PathVariable("bookId") bookId: Int,
+        @RequestBody @Valid request: BookEditRequest
     ): BookView {
         return bookService.edit(bookId, request)
     }
 
     @DeleteMapping("/{bookId}")
     fun deleteBook(
-            @PathVariable("bookId") bookId: Int
+        @PathVariable("bookId") bookId: Int
     ) {
         bookService.delete(bookId)
     }
