@@ -13,7 +13,7 @@ class AuthorController(
     private var authorService: AuthorService
 ) {
 
-    @GetMapping("/")
+    @GetMapping
     fun getAuthors(): Any {
         return authorService.getAll()
     }
@@ -23,7 +23,7 @@ class AuthorController(
         return authorService.getById(authorId)
     }
 
-    @PostMapping("/")
+    @PostMapping
     fun createAuthor(@Valid @RequestBody request: AuthorAddRequest): AuthorView {
         return authorService.add(request)
     }

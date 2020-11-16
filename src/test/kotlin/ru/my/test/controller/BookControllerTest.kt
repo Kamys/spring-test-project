@@ -14,6 +14,7 @@ import ru.my.test.entity.Book
 import ru.my.test.model.BookAddRequest
 import ru.my.test.model.BookEditRequest
 import ru.my.test.model.BookView
+import ru.my.test.service.AuthorRepository
 import ru.my.test.service.BookRepository
 import ru.my.test.service.findOrException
 import javax.transaction.Transactional
@@ -22,6 +23,8 @@ import javax.transaction.Transactional
 class BookControllerTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var bookRepository: BookRepository
+    @Autowired
+    private lateinit var authorRepository: AuthorRepository
 
     @BeforeEach
     fun beforeEach() {
@@ -34,7 +37,7 @@ class BookControllerTest : AbstractIntegrationTest() {
         val bookFirst = modelHelper.createBook()
         val bookSecond = modelHelper.createBook()
 
-        val andReturn = mvc.get("/books/")
+        val andReturn = mvc.get("/books")
             .andExpect(status().isOk)
             .andReturn();
 
@@ -46,13 +49,13 @@ class BookControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `GET books with author ids`() {
-
         val authorFirst = modelHelper.createAuthor()
         val authorSecond = modelHelper.createAuthor()
+
         val bookFirst = modelHelper.createBook(authors = listOf(authorFirst, authorSecond))
         val bookSecond = modelHelper.createBook()
 
-        val andReturn = mvc.get("/books/")
+        val andReturn = mvc.get("/books")
             .andExpect(status().isOk)
             .andReturn();
 
@@ -109,7 +112,7 @@ class BookControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `GET empty array if books not exist`() {
-        val andReturn = mvc.get("/books/")
+        val andReturn = mvc.get("/books")
             .andExpect(status().isOk)
             .andReturn();
 
@@ -123,7 +126,7 @@ class BookControllerTest : AbstractIntegrationTest() {
         val bookTitle = faker.book().title()
         val bookRequest = BookAddRequest(bookTitle)
 
-        val andReturn = mvc.post("/books/", bookRequest.asJson())
+        val andReturn = mvc.post("/books", bookRequest.asJson())
             .andExpect(status().isOk)
             .andReturn();
 
@@ -141,7 +144,7 @@ class BookControllerTest : AbstractIntegrationTest() {
 
         val request = BookEditRequest(bookFirst.name)
 
-        val andReturn = mvc.post("/books/", request.asJson())
+        val andReturn = mvc.post("/books", request.asJson())
             .andExpect(status().isBadRequest)
             .andReturn();
 
@@ -162,7 +165,7 @@ class BookControllerTest : AbstractIntegrationTest() {
             authorIds = authorIds
         )
 
-        val andReturn = mvc.post("/books/", bookRequest.asJson())
+        val andReturn = mvc.post("/books", bookRequest.asJson())
             .andExpect(status().isOk)
             .andReturn();
 
@@ -182,7 +185,7 @@ class BookControllerTest : AbstractIntegrationTest() {
             authorIds = emptyList()
         )
 
-        val andReturn = mvc.post("/books/", bookRequest.asJson())
+        val andReturn = mvc.post("/books", bookRequest.asJson())
             .andExpect(status().isOk)
             .andReturn();
 
@@ -202,7 +205,7 @@ class BookControllerTest : AbstractIntegrationTest() {
             authorIds = listOf(99)
         )
 
-        val andReturn = mvc.post("/books/", bookRequest.asJson())
+        val andReturn = mvc.post("/books", bookRequest.asJson())
             .andExpect(status().isNotFound)
             .andReturn();
 
@@ -213,7 +216,7 @@ class BookControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `POST return validation error if request not correct`() {
-        val andReturn = mvc.post("/books/", "{}")
+        val andReturn = mvc.post("/books", "{}")
             .andExpect(status().isBadRequest)
             .andReturn();
 
@@ -312,6 +315,17 @@ class BookControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `DELETE book with authors`() {
+        val authorFirst = modelHelper.createAuthor()
+        val authorSecond = modelHelper.createAuthor()
 
+        val bookForDelete = modelHelper.createBook(authors = listOf(authorFirst, authorSecond))
+
+        mvc.delete("/books/${bookForDelete.id}").andExpect(status().isOk)
+
+        val allBook = bookRepository.findAll()
+        allBook.shouldBeEmpty()
+
+        val allAuthors = authorRepository.findAll()
+        allAuthors.size.shouldBe(2)
     }
 }

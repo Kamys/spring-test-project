@@ -13,7 +13,6 @@ import ru.my.test.model.AuthorAddRequest
 import ru.my.test.model.AuthorEditRequest
 import ru.my.test.service.AuthorRepository
 import ru.my.test.service.findOrException
-import javax.transaction.Transactional
 
 
 class AuthorControllerTest : AbstractIntegrationTest() {
@@ -31,7 +30,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
         val authorFirst = modelHelper.createAuthor()
         val authorSecond = modelHelper.createAuthor()
 
-        val andReturn = mvc.get("/authors/")
+        val andReturn = mvc.get("/authors")
             .andExpect(status().isOk)
             .andReturn();
 
@@ -67,7 +66,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `return empty array`() {
-        val andReturn = mvc.get("/authors/")
+        val andReturn = mvc.get("/authors")
             .andExpect(status().isOk)
             .andReturn();
 
@@ -81,7 +80,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
         val authorTitle = faker.book().author()
         val authorRequest = AuthorAddRequest(authorTitle, emptyList())
 
-        val andReturn = mvc.post("/authors/", authorRequest.asJson())
+        val andReturn = mvc.post("/authors", authorRequest.asJson())
             .andExpect(status().isOk)
             .andReturn();
 
@@ -95,7 +94,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `return validation error`() {
-        val andReturn = mvc.post("/authors/", "{}")
+        val andReturn = mvc.post("/authors", "{}")
             .andExpect(status().isBadRequest)
             .andReturn();
 
