@@ -25,15 +25,15 @@ dependencies {
     implementation("org.postgresql:postgresql")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.flywaydb:flyway-core")
+
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     testImplementation("io.kotest:kotest-runner-junit5:4.3.1")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.testcontainers:testcontainers:1.15.0")
     testImplementation("org.testcontainers:postgresql:1.15.0")
     testImplementation("com.github.javafaker:javafaker:1.0.2")
     testImplementation(kotlin("test-junit"))

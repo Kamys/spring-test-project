@@ -15,7 +15,6 @@ import java.nio.charset.StandardCharsets
 
 @SpringBootTest(classes = [Application::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@ContextConfiguration(classes = [DataLoader::class])
 abstract class AbstractIntegrationTest {
     @Autowired
     protected lateinit var mvc: MockMvc
