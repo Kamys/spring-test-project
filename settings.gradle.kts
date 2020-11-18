@@ -1,3 +1,3 @@
 
-rootProject.name = "testSpring"
+rootProject.name = "spring-test-project"
 
