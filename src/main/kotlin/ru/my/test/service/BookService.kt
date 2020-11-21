@@ -33,9 +33,9 @@ class BookService(
 
     fun edit(bookId: Int, request: BookEditRequest): BookView {
         val book = bookRepository.findOrException(bookId)
-        /*if (!request.name.isNullOrEmpty()) {
+        if (!request.name.isNullOrEmpty()) {
             book.name = request.name
-        }*/
+        }
         if (!request.authorIds.isNullOrEmpty()) {
             book.authors = authorService.getAllByIds(request.authorIds)
         }
