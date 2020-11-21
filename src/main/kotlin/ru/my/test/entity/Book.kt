@@ -13,5 +13,7 @@ class Book(
         joinColumns = [JoinColumn(name = "book_id")],
         inverseJoinColumns = [JoinColumn(name = "author_id")]
     )
-    var authors: List<Author> = emptyList()
-) : BaseEntity(id)
+    var authors: List<Author> = emptyList(),
+    @OneToMany(mappedBy="book", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var reviews: List<Review> = emptyList(),
+): BaseEntity(id)

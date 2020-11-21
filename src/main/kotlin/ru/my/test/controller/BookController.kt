@@ -14,12 +14,12 @@ class BookController(
 ) {
 
     @GetMapping
-    fun getBooks(): Any {
+    fun getBooks(): List<BookView> {
         return bookService.getAll()
     }
 
     @GetMapping("/{bookId}")
-    fun getBooks(@PathVariable("bookId") bookId: Int): Any {
+    fun getBooks(@PathVariable("bookId") bookId: Int): BookView {
         return bookService.getById(bookId)
     }
 

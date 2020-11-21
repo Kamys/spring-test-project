@@ -17,7 +17,7 @@ class AuthorAddRequest(
 )
 
 class AuthorEditRequest(
-    val name: String?,
+    val name: String? = null,
     @field:UniqueElements
     val bookIds: List<Int>? = null
 )
