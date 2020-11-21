@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import ru.my.test.AbstractIntegrationTest
-import ru.my.test.entity.Book
 import ru.my.test.model.BookAddRequest
 import ru.my.test.model.BookEditRequest
 import ru.my.test.model.BookView
@@ -29,22 +28,22 @@ class BookControllerTest : AbstractIntegrationTest() {
     @BeforeEach
     fun beforeEach() {
         bookRepository.deleteAll()
+        authorRepository.deleteAll()
     }
 
     @Test
-    fun `GET all exist book`() {
+    fun `GET all exist books`() {
 
         val bookFirst = modelHelper.createBook()
         val bookSecond = modelHelper.createBook()
 
-        val andReturn = mvc.get("/books")
+        val response = mvc.get("/books")
             .andExpect(status().isOk)
-            .andReturn();
+            .andReturn()
+            .asObject<List<BookView>>()
 
-        val result = andReturn.asObject<List<BookView>>()
-
-        result.size.shouldBe(2)
-        result.map { it.name }.shouldContainExactly(listOf(bookFirst.name, bookSecond.name))
+        response.size.shouldBe(2)
+        response.map { it.name }.shouldContainExactly(listOf(bookFirst.name, bookSecond.name))
     }
 
     @Test
@@ -55,17 +54,39 @@ class BookControllerTest : AbstractIntegrationTest() {
         val bookFirst = modelHelper.createBook(authors = listOf(authorFirst, authorSecond))
         val bookSecond = modelHelper.createBook()
 
-        val andReturn = mvc.get("/books")
+        val response = mvc.get("/books")
             .andExpect(status().isOk)
-            .andReturn();
+            .andReturn()
+            .asObject<List<BookView>>()
 
-        val result = andReturn.asObject<List<BookView>>()
-
-        result.size.shouldBe(2)
-        result.findOrException { it.id == bookFirst.id }
+        response.size.shouldBe(2)
+        response.findOrException { it.id == bookFirst.id }
             .authorIds
             .shouldContainExactly(listOf(authorFirst.id, authorSecond.id))
-        result.findOrException { it.id == bookSecond.id }
+        response.findOrException { it.id == bookSecond.id }
+            .authorIds
+            .shouldBeEmpty()
+    }
+
+    @Test
+    fun `GET books with reviews`() {
+        val bookFirst = modelHelper.createBook()
+        val bookSecond = modelHelper.createBook()
+
+        val reviewFirst = modelHelper.createReview(bookFirst)
+        val reviewSecond = modelHelper.createReview(bookFirst)
+
+        val response = mvc.get("/books")
+            .andExpect(status().isOk)
+            .andReturn()
+            .asObject<List<BookView>>()
+
+        response.size.shouldBe(2)
+        response.findOrException { it.id == bookFirst.id }
+            .reviews
+            .map { it.id }
+            .shouldContainExactly(listOf(reviewFirst.id, reviewSecond.id))
+        response.findOrException { it.id == bookSecond.id }
             .authorIds
             .shouldBeEmpty()
     }
@@ -76,13 +97,12 @@ class BookControllerTest : AbstractIntegrationTest() {
         val authorSecond = modelHelper.createAuthor()
         val bookFirst = modelHelper.createBook(authors = listOf(authorFirst, authorSecond))
 
-        val andReturn = mvc.get("/books/${bookFirst.id}")
+        val response = mvc.get("/books/${bookFirst.id}")
             .andExpect(status().isOk)
-            .andReturn();
+            .andReturn()
+            .asObject<BookView>()
 
-        val result = andReturn.asObject<BookView>()
-
-        result.authorIds
+        response.authorIds
             .shouldContainExactly(listOf(authorFirst.id, authorSecond.id))
     }
 
@@ -90,16 +110,15 @@ class BookControllerTest : AbstractIntegrationTest() {
     fun `GET book by id`() {
         val book = modelHelper.createBook()
 
-        val andReturn = mvc.get("/books/${book.id}")
+        val response = mvc.get("/books/${book.id}")
             .andExpect(status().isOk)
-            .andReturn();
+            .andReturn()
+            .asObject<BookView>()
 
-        val result = andReturn.asObject<BookView>()
+        response.id.shouldBe(book.id)
+        response.name.shouldBe(book.name)
 
-        result.id.shouldBe(book.id)
-        result.name.shouldBe(book.name)
         val allBooks = bookRepository.findAll()
-
         allBooks.size.shouldBe(1)
         allBooks.first().id.shouldBe(book.id)
         allBooks.first().name.shouldBe(book.name)
@@ -112,13 +131,12 @@ class BookControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `GET empty array if books not exist`() {
-        val andReturn = mvc.get("/books")
+        val response = mvc.get("/books")
             .andExpect(status().isOk)
-            .andReturn();
+            .andReturn()
+            .asObject<List<BookView>>()
 
-        val result = andReturn.asObject<List<BookView>>()
-
-        result.shouldBeEmpty()
+        response.shouldBeEmpty()
     }
 
     @Test
@@ -126,13 +144,12 @@ class BookControllerTest : AbstractIntegrationTest() {
         val bookTitle = faker.book().title()
         val bookRequest = BookAddRequest(bookTitle)
 
-        val andReturn = mvc.post("/books", bookRequest.asJson())
+        val response = mvc.post("/books", bookRequest.asJson())
             .andExpect(status().isOk)
-            .andReturn();
+            .andReturn()
+            .asObject<BookView>()
 
-        val result = andReturn.asObject<Book>()
-
-        result.name.shouldBe(bookTitle)
+        response.name.shouldBe(bookTitle)
         val allBooks = bookRepository.findAll()
         allBooks.size.shouldBe(1)
         allBooks.first().name.shouldBe(bookTitle)
@@ -144,13 +161,12 @@ class BookControllerTest : AbstractIntegrationTest() {
 
         val request = BookEditRequest(bookFirst.name)
 
-        val andReturn = mvc.post("/books", request.asJson())
+        val response = mvc.post("/books", request.asJson())
             .andExpect(status().isBadRequest)
-            .andReturn();
+            .andReturn()
+            .asObject<ApiValidationError>()
 
-        val result = andReturn.asObject<ApiValidationError>()
-
-        result.violations.first().message.shouldBe("Имя уже используется")
+        response.violations.first().message.shouldBe("Имя уже используется")
     }
 
     @Test
@@ -165,13 +181,12 @@ class BookControllerTest : AbstractIntegrationTest() {
             authorIds = authorIds
         )
 
-        val andReturn = mvc.post("/books", bookRequest.asJson())
+        val response = mvc.post("/books", bookRequest.asJson())
             .andExpect(status().isOk)
-            .andReturn();
+            .andReturn()
+            .asObject<BookView>()
 
-        val result = andReturn.asObject<BookView>()
-
-        result.authorIds.shouldContainExactly(authorIds)
+        response.authorIds.shouldContainExactly(authorIds)
         val allBooks = bookRepository.findAll()
         allBooks.size.shouldBe(1)
         allBooks.first().authors.map { it.id }.shouldContainExactly(authorIds)
@@ -185,13 +200,12 @@ class BookControllerTest : AbstractIntegrationTest() {
             authorIds = emptyList()
         )
 
-        val andReturn = mvc.post("/books", bookRequest.asJson())
+        val response = mvc.post("/books", bookRequest.asJson())
             .andExpect(status().isOk)
-            .andReturn();
+            .andReturn()
+            .asObject<BookView>()
 
-        val result = andReturn.asObject<BookView>()
-
-        result.authorIds.shouldBeEmpty()
+        response.authorIds.shouldBeEmpty()
         val allBooks = bookRepository.findAll()
         allBooks.size.shouldBe(1)
         allBooks.first().authors.shouldBeEmpty()
@@ -205,31 +219,29 @@ class BookControllerTest : AbstractIntegrationTest() {
             authorIds = listOf(99)
         )
 
-        val andReturn = mvc.post("/books", bookRequest.asJson())
+        val response = mvc.post("/books", bookRequest.asJson())
             .andExpect(status().isNotFound)
-            .andReturn();
+            .andReturn()
+            .asObject<ApiError>()
 
-        val result = andReturn.asObject<ApiError>()
-
-        result.detail.shouldBe("Не удалось найти автора с id: 99")
+        response.detail.shouldBe("Не удалось найти автора с id: 99")
     }
 
     @Test
-    fun `POST return validation error if request not correct`() {
-        val andReturn = mvc.post("/books", "{}")
+    fun `POST return 400 if request not correct`() {
+        val response = mvc.post("/books", "{}")
             .andExpect(status().isBadRequest)
-            .andReturn();
+            .andReturn()
+            .asObject<ApiError>()
 
-        val result = andReturn.asObject<ApiError>()
-
-        result.title.shouldBe(ApiError.ERROR_MESSAGES_JSON_NOT_VALID)
+        response.title.shouldBe(ApiError.ERROR_MESSAGES_JSON_NOT_VALID)
     }
 
     @Test
     fun `PUT book by nonexistent ID should return 404`() {
         val request = BookEditRequest("Book new name")
 
-        mvc.put("/books/1", request.asJson()).andExpect(status().isNotFound)
+        mvc.put("/books/99", request.asJson()).andExpect(status().isNotFound)
     }
 
     @Test
@@ -239,14 +251,13 @@ class BookControllerTest : AbstractIntegrationTest() {
 
         val request = BookEditRequest("Book new name")
 
-        val andReturn = mvc.put("/books/${editedBook.id}", request.asJson())
+        val response = mvc.put("/books/${editedBook.id}", request.asJson())
             .andExpect(status().isOk)
-            .andReturn();
+            .andReturn()
+            .asObject<BookView>()
 
-        val result = andReturn.asObject<BookView>()
-
-        result.id.shouldBe(editedBook.id)
-        result.name.shouldBe(request.name)
+        response.id.shouldBe(editedBook.id)
+        response.name.shouldBe(request.name)
 
         bookRepository.findOrException(editedBook.id).name.shouldBe(request.name)
         bookRepository.findOrException(bookSecond.id).name.shouldBe(bookSecond.name)
@@ -265,16 +276,17 @@ class BookControllerTest : AbstractIntegrationTest() {
         val newAuthorIds = listOf(authorThird.id)
         val request = BookEditRequest(authorIds = newAuthorIds)
 
-        val andReturn = mvc.put("/books/${editedBook.id}", request.asJson())
+        val response = mvc.put("/books/${editedBook.id}", request.asJson())
             .andExpect(status().isOk)
-            .andReturn();
+            .andReturn()
+            .asObject<BookView>()
 
-        val result = andReturn.asObject<BookView>()
+        response.id.shouldBe(editedBook.id)
+        response.authorIds.shouldContainExactly(newAuthorIds)
 
-        result.id.shouldBe(editedBook.id)
-        result.authorIds.shouldContainExactly(newAuthorIds)
-
-        bookRepository.findOrException(editedBook.id).authors.map { it.id }.shouldContainExactly(newAuthorIds)
+        bookRepository.findOrException(editedBook.id).authors
+            .map { it.id }
+            .shouldContainExactly(newAuthorIds)
         bookRepository.findOrException(bookSecond.id).authors.shouldBeEmpty()
     }
 
@@ -286,13 +298,12 @@ class BookControllerTest : AbstractIntegrationTest() {
 
         val request = BookEditRequest(bookSecond.name)
 
-        val andReturn = mvc.put("/books/${bookFirst.id}", request.asJson())
+        val response = mvc.put("/books/${bookFirst.id}", request.asJson())
             .andExpect(status().isBadRequest)
-            .andReturn();
+            .andReturn()
+            .asObject<ApiValidationError>()
 
-        val result = andReturn.asObject<ApiValidationError>()
-
-        result.violations.first().message.shouldBe("Имя уже используется")
+        response.violations.first().message.shouldBe("Имя уже используется")
     }
 
     @Test
@@ -301,7 +312,7 @@ class BookControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    fun `DELETE book return 200 if book deleted`() {
+    fun `DELETE return 200 if book deleted`() {
         val bookForDelete = modelHelper.createBook()
         val book = modelHelper.createBook()
 

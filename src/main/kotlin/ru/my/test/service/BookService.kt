@@ -7,6 +7,7 @@ import ru.my.test.entity.Book
 import ru.my.test.model.BookAddRequest
 import ru.my.test.model.BookEditRequest
 import ru.my.test.model.BookView
+import ru.my.test.service.mapper.toView
 
 @Service
 @Transactional
@@ -51,15 +52,15 @@ class BookService(
         return bookRepository.findOrException(bookId).toView()
     }
 
+    fun getModelById(bookId: Int): Book {
+        return bookRepository.findOrException(bookId)
+    }
+
     fun getAllByIds(booksIds: List<Int>): List<Book> {
         return bookRepository.findAllByIdOrException(booksIds)
     }
 
     fun existsByName(name: String): Boolean {
         return bookRepository.existsByName(name)
-    }
-
-    fun Book.toView(): BookView {
-        return BookView(this.id, this.name, this.authors.map { it.id })
     }
 }
