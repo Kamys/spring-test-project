@@ -10,7 +10,7 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/authors")
 class AuthorController(
-    private var authorService: AuthorService
+    private val authorService: AuthorService
 ) {
 
     @GetMapping

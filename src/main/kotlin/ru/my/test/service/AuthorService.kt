@@ -10,19 +10,25 @@ import ru.my.test.model.AuthorView
 
 @Service
 @Transactional
-class AuthorService(
-    private val authorRepository: AuthorRepository,
-) {
-
+class AuthorService {
+    @Autowired
+    private lateinit var authorRepository: AuthorRepository
     @Autowired
     private lateinit var bookService: BookService
+    @Autowired
+    private lateinit var userService: UserService
 
     fun getAll(): List<AuthorView> {
         return authorRepository.findAll().map { it.toView() }
     }
 
     fun add(request: AuthorAddRequest): AuthorView {
-        val author = Author(name = request.name)
+        val user = userService.getModelById(request.userId)
+
+        val author = Author(
+            descriptionOfWrittenStyle = request.descriptionOfWrittenStyle,
+            user = user,
+        )
 
         if (!request.bookIds.isNullOrEmpty()) {
             author.books = bookService.getAllByIds(request.bookIds)
@@ -33,8 +39,8 @@ class AuthorService(
 
     fun edit(authorId: Int, request: AuthorEditRequest): AuthorView {
         val author = authorRepository.findOrException(authorId)
-        if (!request.name.isNullOrEmpty()) {
-            author.name = request.name
+        if (!request.descriptionOfWrittenStyle.isNullOrEmpty()) {
+            author.descriptionOfWrittenStyle = request.descriptionOfWrittenStyle
         }
         if (!request.bookIds.isNullOrEmpty()) {
             author.books = bookService.getAllByIds(request.bookIds)
@@ -52,7 +58,7 @@ class AuthorService(
     }
 
     fun Author.toView(): AuthorView {
-        return AuthorView(this.id, this.name, this.books.map { it.id })
+        return AuthorView(this.id, this.descriptionOfWrittenStyle, this.books.map { it.id }, this.user)
     }
 
     fun getAllByIds(authorIds: List<Int>): List<Author> {
