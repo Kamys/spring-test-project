@@ -38,7 +38,12 @@ class AuthorControllerTest : AbstractIntegrationTest() {
             .asObject<List<AuthorView>>()
 
         response.size.shouldBe(2)
-        response.map { it.name }.shouldContainExactly(listOf(authorFirst.name, authorSecond.name))
+        response.map { it.descriptionOfWrittenStyle }
+            .shouldContainExactly(
+                listOf(
+                    authorFirst.descriptionOfWrittenStyle, authorSecond.descriptionOfWrittenStyle
+                )
+            )
     }
 
     @Test
@@ -51,12 +56,12 @@ class AuthorControllerTest : AbstractIntegrationTest() {
             .asObject<AuthorView>()
 
         response.id.shouldBe(author.id)
-        response.name.shouldBe(author.name)
+        response.descriptionOfWrittenStyle.shouldBe(author.descriptionOfWrittenStyle)
         val allAuthors = authorRepository.findAll()
 
         allAuthors.size.shouldBe(1)
         allAuthors.first().id.shouldBe(author.id)
-        allAuthors.first().name.shouldBe(author.name)
+        allAuthors.first().descriptionOfWrittenStyle.shouldBe(author.descriptionOfWrittenStyle)
     }
 
     @Test
@@ -77,17 +82,18 @@ class AuthorControllerTest : AbstractIntegrationTest() {
     @Test
     fun `POST created new author`() {
         val authorTitle = faker.book().author()
-        val authorRequest = AuthorAddRequest(authorTitle, emptyList())
+        val user = modelHelper.createUser()
+        val authorRequest = AuthorAddRequest(user.id, authorTitle, emptyList())
 
         val response = mvc.post("/authors", authorRequest.asJson())
             .andExpect(status().isOk)
             .andReturn()
             .asObject<AuthorView>()
 
-        response.name.shouldBe(authorTitle)
+        response.descriptionOfWrittenStyle.shouldBe(authorTitle)
         val allAuthors = authorRepository.findAll()
         allAuthors.size.shouldBe(1)
-        allAuthors.first().name.shouldBe(authorTitle)
+        allAuthors.first().descriptionOfWrittenStyle.shouldBe(authorTitle)
     }
 
     @Test
@@ -95,11 +101,13 @@ class AuthorControllerTest : AbstractIntegrationTest() {
     fun `POST created new author with books`() {
         val bookFirst = modelHelper.createBook()
         val bookSecond = modelHelper.createBook()
+        val user = modelHelper.createUser()
 
         val bookIds = listOf(bookFirst.id, bookSecond.id)
         val authorRequest = AuthorAddRequest(
-            name = "Author name",
-            bookIds = bookIds
+            descriptionOfWrittenStyle = "Description of written style",
+            bookIds = bookIds,
+            userId = user.id
         )
 
         val response = mvc.post("/authors", authorRequest.asJson())
@@ -116,9 +124,11 @@ class AuthorControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `POST return 404 if bookIds has nonexistent ID`() {
+        val user = modelHelper.createUser()
         val authorRequest = AuthorAddRequest(
-            name = "Author name",
-            bookIds = listOf(99)
+            descriptionOfWrittenStyle = "Author name",
+            bookIds = listOf(99),
+            userId = user.id,
         )
 
         val response = mvc.post("/authors", authorRequest.asJson())
@@ -159,10 +169,17 @@ class AuthorControllerTest : AbstractIntegrationTest() {
             .asObject<AuthorView>()
 
         response.id.shouldBe(editedAuthor.id)
-        response.name.shouldBe(request.name)
+        response.descriptionOfWrittenStyle.shouldBe(request.descriptionOfWrittenStyle)
 
-        authorRepository.findOrException(editedAuthor.id).name.shouldBe(request.name)
-        authorRepository.findOrException(authorSecond.id).name.shouldBe(authorSecond.name)
+        authorRepository
+            .findOrException(editedAuthor.id)
+            .descriptionOfWrittenStyle
+            .shouldBe(request.descriptionOfWrittenStyle)
+
+        authorRepository
+            .findOrException(authorSecond.id)
+            .descriptionOfWrittenStyle
+            .shouldBe(authorSecond.descriptionOfWrittenStyle)
     }
 
     @Test
@@ -220,6 +237,6 @@ class AuthorControllerTest : AbstractIntegrationTest() {
         val allAuthor = authorRepository.findAll()
         allAuthor.size.shouldBe(1)
         allAuthor.first().id.shouldBe(author.id)
-        allAuthor.first().name.shouldBe(author.name)
+        allAuthor.first().descriptionOfWrittenStyle.shouldBe(author.descriptionOfWrittenStyle)
     }
 }
