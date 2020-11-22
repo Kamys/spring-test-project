@@ -12,7 +12,7 @@ class ReviewView(
 )
 
 class ReviewAddRequest(
-    @field:Length(min = 5, max=200)
+    @field:Length(min = 5, max = 200)
     val text: String?,
     @field:NotNull
     val rating: BookRating,
@@ -21,7 +21,7 @@ class ReviewAddRequest(
 )
 
 class ReviewEditRequest(
-    @field:Length(min = 5, max=200)
+    @field:Length(min = 5, max = 200)
     val text: String? = null,
     val rating: BookRating? = null,
     val bookId: Int? = null,

@@ -14,6 +14,6 @@ class Book(
         inverseJoinColumns = [JoinColumn(name = "author_id")]
     )
     var authors: List<Author> = emptyList(),
-    @OneToMany(mappedBy="book", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "book", cascade = [CascadeType.ALL], orphanRemoval = true)
     var reviews: List<Review> = emptyList(),
-): BaseEntity(id)
+) : BaseEntity(id)

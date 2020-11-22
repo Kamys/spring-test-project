@@ -13,8 +13,10 @@ import ru.my.test.model.AuthorView
 class AuthorService {
     @Autowired
     private lateinit var authorRepository: AuthorRepository
+
     @Autowired
     private lateinit var bookService: BookService
+
     @Autowired
     private lateinit var userService: UserService
 
@@ -58,7 +60,12 @@ class AuthorService {
     }
 
     fun Author.toView(): AuthorView {
-        return AuthorView(this.id, this.descriptionOfWrittenStyle, this.books.map { it.id }, this.user)
+        return AuthorView(
+            this.id,
+            this.descriptionOfWrittenStyle,
+            this.books.map { it.id },
+            this.user
+        )
     }
 
     fun getAllByIds(authorIds: List<Int>): List<Author> {

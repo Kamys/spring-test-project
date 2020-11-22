@@ -14,12 +14,12 @@ class AuthorController(
 ) {
 
     @GetMapping
-    fun getAuthors(): Any {
+    fun getAuthors(): List<AuthorView> {
         return authorService.getAll()
     }
 
     @GetMapping("/{authorId}")
-    fun getAuthors(@PathVariable("authorId") authorId: Int): Any {
+    fun getAuthors(@PathVariable("authorId") authorId: Int): AuthorView {
         return authorService.getById(authorId)
     }
 
@@ -37,9 +37,7 @@ class AuthorController(
     }
 
     @DeleteMapping("/{authorId}")
-    fun deleteAuthor(
-        @PathVariable("authorId") authorId: Int
-    ) {
+    fun deleteAuthor(@PathVariable("authorId") authorId: Int) {
         authorService.delete(authorId)
     }
 }
