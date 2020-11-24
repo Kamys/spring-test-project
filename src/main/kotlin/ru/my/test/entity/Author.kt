@@ -13,5 +13,8 @@ class Author(
         joinColumns = [JoinColumn(name = "author_id")],
         inverseJoinColumns = [JoinColumn(name = "book_id")]
     )
-    var books: List<Book> = emptyList()
+    var books: List<Book> = emptyList(),
+    @OneToOne(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "contact_id")
+    var contact: Contact? = null
 ) : BaseEntity(id)

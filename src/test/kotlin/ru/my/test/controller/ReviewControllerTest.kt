@@ -1,6 +1,6 @@
 package ru.my.test.controller
 
-import ApiError
+import ru.my.test.model.ApiError
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -123,7 +123,7 @@ class ReviewControllerTest : AbstractIntegrationTest() {
             .andReturn()
             .asObject<ApiError>()
 
-        response.title.shouldBe(ApiError.ERROR_MESSAGES_JSON_NOT_VALID)
+        response.title.shouldBe(ErrorMessages.JSON_NOT_VALID.text)
     }
 
     @Test

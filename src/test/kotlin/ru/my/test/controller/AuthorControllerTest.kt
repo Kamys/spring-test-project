@@ -1,18 +1,16 @@
 package ru.my.test.controller
 
-import ApiError
-import ApiValidationError
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import ru.my.test.AbstractIntegrationTest
-import ru.my.test.model.AuthorAddRequest
-import ru.my.test.model.AuthorEditRequest
-import ru.my.test.model.AuthorView
+import ru.my.test.model.*
 import ru.my.test.service.AuthorRepository
+import ru.my.test.service.ContactRepository
 import ru.my.test.service.findOrException
 import javax.transaction.Transactional
 
@@ -20,6 +18,8 @@ import javax.transaction.Transactional
 class AuthorControllerTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var authorRepository: AuthorRepository
+    @Autowired
+    private lateinit var contactRepository: ContactRepository
 
     @BeforeEach
     fun beforeEach() {
@@ -136,7 +136,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
             .andReturn()
             .asObject<ApiError>()
 
-        response.title.shouldBe(ApiError.ERROR_MESSAGES_JSON_NOT_VALID)
+        response.title.shouldBe(ErrorMessages.JSON_NOT_VALID.text)
     }
 
     @Test
@@ -221,5 +221,18 @@ class AuthorControllerTest : AbstractIntegrationTest() {
         allAuthor.size.shouldBe(1)
         allAuthor.first().id.shouldBe(author.id)
         allAuthor.first().name.shouldBe(author.name)
+    }
+
+    @Test
+    @Transactional
+    fun `DELETE author also delete contact`() {
+        val author = modelHelper.createAuthor()
+        modelHelper.createContact(author)
+
+        mvc.delete("/authors/${author.id}").andExpect(status().isOk)
+
+        authorRepository.count().shouldBe(0)
+        contactRepository.count().shouldBe(0)
+        contactRepository.findAll()
     }
 }

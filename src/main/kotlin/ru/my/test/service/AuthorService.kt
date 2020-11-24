@@ -16,6 +16,8 @@ class AuthorService(
 
     @Autowired
     private lateinit var bookService: BookService
+    @Autowired
+    private lateinit var contactService: ContactService
 
     fun getAll(): List<AuthorView> {
         return authorRepository.findAll().map { it.toView() }
@@ -44,11 +46,19 @@ class AuthorService(
 
     fun delete(authorId: Int) {
         val author = authorRepository.findOrException(authorId)
+        val contact = author.contact
+        if (contact != null) {
+            contactService.delete(contact.id)
+        }
         return authorRepository.delete(author)
     }
 
     fun getById(authorId: Int): AuthorView {
-        return authorRepository.findOrException(authorId).toView()
+        return this.getModelById(authorId).toView()
+    }
+
+    fun getModelById(authorId: Int): Author{
+        return authorRepository.findOrException(authorId)
     }
 
     fun Author.toView(): AuthorView {

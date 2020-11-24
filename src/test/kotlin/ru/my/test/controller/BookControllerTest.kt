@@ -1,7 +1,5 @@
 package ru.my.test.controller
 
-import ApiError
-import ApiValidationError
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
@@ -10,9 +8,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import ru.my.test.AbstractIntegrationTest
-import ru.my.test.model.BookAddRequest
-import ru.my.test.model.BookEditRequest
-import ru.my.test.model.BookView
+import ru.my.test.model.*
 import ru.my.test.service.AuthorRepository
 import ru.my.test.service.BookRepository
 import ru.my.test.service.findOrException
@@ -234,7 +230,7 @@ class BookControllerTest : AbstractIntegrationTest() {
             .andReturn()
             .asObject<ApiError>()
 
-        response.title.shouldBe(ApiError.ERROR_MESSAGES_JSON_NOT_VALID)
+        response.title.shouldBe(ErrorMessages.JSON_NOT_VALID.text)
     }
 
     @Test
