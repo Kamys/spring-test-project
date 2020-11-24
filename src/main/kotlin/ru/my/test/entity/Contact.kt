@@ -8,6 +8,6 @@ class Contact(
     id: Int = 0,
     var phone: String,
     var email: String,
-    @OneToOne(mappedBy = "contact", orphanRemoval = true)
+    @OneToOne(mappedBy = "contact")
     var author: Author
 ) : BaseEntity(id)

@@ -177,19 +177,20 @@ class ContactControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `DELETE contact not deleted Author`() {
-        val author = modelHelper.createAuthor()
-        val contact = modelHelper.createContact(author = author)
+        val author = Author(name = "Author")
+        val contact = Contact(phone = "Phone number", email = "Email", author = author)
+        author.contact = contact
+        authorRepository.save(author)
 
-        mvc.delete("/contacts/${contact.id}").andExpect(status().isOk)
+        //mvc.delete("/contacts/${contact.id}").andExpect(status().isOk)
+        contactRepository.delete(contact)
 
         contactRepository.count().shouldBe(0)
         authorRepository.count().shouldBe(1)
         authorRepository.findOrException(author.id).let {
             it.contact.shouldBeNull()
             it.name.shouldBe(author.name)
-            it.books.map {item ->  item.id}.shouldContainExactly(author.books.map {item ->  item.id})
         }
     }
 }

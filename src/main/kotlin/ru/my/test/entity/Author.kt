@@ -14,7 +14,7 @@ class Author(
         inverseJoinColumns = [JoinColumn(name = "book_id")]
     )
     var books: List<Book> = emptyList(),
-    @OneToOne(cascade = [CascadeType.ALL])
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "contact_id")
     var contact: Contact? = null
 ) : BaseEntity(id)
