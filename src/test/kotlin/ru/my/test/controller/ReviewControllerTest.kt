@@ -3,6 +3,7 @@ package ru.my.test.controller
 import ru.my.test.model.ApiError
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.equality.shouldBeEqualToUsingFields
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
@@ -11,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import ru.my.test.AbstractIntegrationTest
 import ru.my.test.entity.BookRating
+import ru.my.test.entity.Review
 import ru.my.test.model.*
+import ru.my.test.service.BookRepository
 import ru.my.test.service.ReviewRepository
 import ru.my.test.service.findOrException
 import javax.transaction.Transactional
@@ -20,10 +23,13 @@ import javax.transaction.Transactional
 class ReviewControllerTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var reviewRepository: ReviewRepository
+    @Autowired
+    private lateinit var bookRepository: BookRepository
 
     @BeforeEach
     fun beforeEach() {
         reviewRepository.deleteAll()
+        bookRepository.deleteAll()
     }
 
     @Test
@@ -174,8 +180,8 @@ class ReviewControllerTest : AbstractIntegrationTest() {
 
         val allReviews = reviewRepository.findAll()
         allReviews.size.shouldBe(1)
-        allReviews.first().id.shouldBe(reviewSecond.id)
-        allReviews.first().text.shouldBe(reviewSecond.text)
-        allReviews.first().rating.shouldBe(reviewSecond.rating)
+        allReviews.first().shouldBeEqualToUsingFields(reviewSecond, Review::id, Review::text, Review::rating)
+
+        bookRepository.count().shouldBe(1)
     }
 }

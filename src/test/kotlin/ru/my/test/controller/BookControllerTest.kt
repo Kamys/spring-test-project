@@ -11,6 +11,7 @@ import ru.my.test.AbstractIntegrationTest
 import ru.my.test.model.*
 import ru.my.test.service.AuthorRepository
 import ru.my.test.service.BookRepository
+import ru.my.test.service.ReviewRepository
 import ru.my.test.service.findOrException
 import javax.transaction.Transactional
 
@@ -20,11 +21,14 @@ class BookControllerTest : AbstractIntegrationTest() {
     private lateinit var bookRepository: BookRepository
     @Autowired
     private lateinit var authorRepository: AuthorRepository
+    @Autowired
+    private lateinit var reviewRepository: ReviewRepository
 
     @BeforeEach
     fun beforeEach() {
         bookRepository.deleteAll()
         authorRepository.deleteAll()
+        reviewRepository.deleteAll()
     }
 
     @Test
@@ -334,5 +338,20 @@ class BookControllerTest : AbstractIntegrationTest() {
 
         val allAuthors = authorRepository.findAll()
         allAuthors.size.shouldBe(2)
+    }
+
+    @Test
+    fun `DELETE book also delete contact`() {
+        val bookForDelete = modelHelper.createBook()
+        modelHelper.createReview(book = bookForDelete)
+        modelHelper.createReview(book = bookForDelete)
+
+        bookRepository.count().shouldBe(1)
+        reviewRepository.count().shouldBe(2)
+
+        mvc.delete("/books/${bookForDelete.id}").andExpect(status().isOk)
+
+        bookRepository.count().shouldBe(0)
+        reviewRepository.count().shouldBe(0)
     }
 }
