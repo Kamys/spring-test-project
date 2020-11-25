@@ -3,6 +3,7 @@ package ru.my.test.controller
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToUsingFields
 import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -90,10 +91,11 @@ class ContactControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `POST created new contact`() {
+        val author = modelHelper.createAuthor()
         val request = ContactAddRequest(
             phone = faker.phoneNumber().phoneNumber(),
             email = faker.internet().emailAddress(),
-            authorId = modelHelper.createAuthor().id,
+            authorId = author.id,
         )
 
         val response = mvc.post("/contacts", request.asJson())
@@ -108,6 +110,10 @@ class ContactControllerTest : AbstractIntegrationTest() {
         contactRepository.findOrException(response.id).let {
             it.email.shouldBe(request.email)
             it.phone.shouldBe(request.phone)
+        }
+        authorRepository.findOrException(author.id).let {
+            it.contact.shouldNotBeNull()
+            it.contact?.id.shouldBe(response.id)
         }
     }
 

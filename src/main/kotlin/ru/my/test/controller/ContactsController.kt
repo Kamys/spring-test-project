@@ -14,7 +14,7 @@ class ContactsController(
 ) {
 
     @GetMapping
-    fun getContacts(): Any {
+    fun getContacts(): List<ContactView> {
         return contactService.getAll()
     }
 
