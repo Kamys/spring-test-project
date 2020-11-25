@@ -1,9 +1,5 @@
 package ru.my.test.controller
 
-import ApiError
-import ApiValidationError
-import ErrorType
-import Violation
 import javassist.NotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -14,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import ru.my.test.model.*
 
 
 @RestControllerAdvice
@@ -46,7 +43,7 @@ class ModelControllerAdvice {
         return ApiError(
             type = ErrorType.PROCESS_ERROR,
             status = HttpStatus.NOT_FOUND.value(),
-            title = ApiError.ERROR_MESSAGES_JSON_NOT_VALID,
+            title = ErrorMessages.JSON_NOT_VALID.text,
             detail = exception.message
         )
     }

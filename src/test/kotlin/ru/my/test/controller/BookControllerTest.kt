@@ -1,7 +1,5 @@
 package ru.my.test.controller
 
-import ApiError
-import ApiValidationError
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
@@ -10,11 +8,10 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import ru.my.test.AbstractIntegrationTest
-import ru.my.test.model.BookAddRequest
-import ru.my.test.model.BookEditRequest
-import ru.my.test.model.BookView
+import ru.my.test.model.*
 import ru.my.test.service.AuthorRepository
 import ru.my.test.service.BookRepository
+import ru.my.test.service.ReviewRepository
 import ru.my.test.service.findOrException
 import javax.transaction.Transactional
 
@@ -24,11 +21,14 @@ class BookControllerTest : AbstractIntegrationTest() {
     private lateinit var bookRepository: BookRepository
     @Autowired
     private lateinit var authorRepository: AuthorRepository
+    @Autowired
+    private lateinit var reviewRepository: ReviewRepository
 
     @BeforeEach
     fun beforeEach() {
         bookRepository.deleteAll()
         authorRepository.deleteAll()
+        reviewRepository.deleteAll()
     }
 
     @Test
@@ -234,7 +234,7 @@ class BookControllerTest : AbstractIntegrationTest() {
             .andReturn()
             .asObject<ApiError>()
 
-        response.title.shouldBe(ApiError.ERROR_MESSAGES_JSON_NOT_VALID)
+        response.title.shouldBe(ErrorMessages.JSON_NOT_VALID.text)
     }
 
     @Test
@@ -338,5 +338,20 @@ class BookControllerTest : AbstractIntegrationTest() {
 
         val allAuthors = authorRepository.findAll()
         allAuthors.size.shouldBe(2)
+    }
+
+    @Test
+    fun `DELETE book also delete contact`() {
+        val bookForDelete = modelHelper.createBook()
+        modelHelper.createReview(book = bookForDelete)
+        modelHelper.createReview(book = bookForDelete)
+
+        bookRepository.count().shouldBe(1)
+        reviewRepository.count().shouldBe(2)
+
+        mvc.delete("/books/${bookForDelete.id}").andExpect(status().isOk)
+
+        bookRepository.count().shouldBe(0)
+        reviewRepository.count().shouldBe(0)
     }
 }

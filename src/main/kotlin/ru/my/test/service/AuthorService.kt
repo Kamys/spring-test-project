@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.my.test.entity.Author
+import ru.my.test.entity.Contact
 import ru.my.test.model.AuthorAddRequest
 import ru.my.test.model.AuthorEditRequest
 import ru.my.test.model.AuthorView
@@ -16,6 +17,8 @@ class AuthorService(
 
     @Autowired
     private lateinit var bookService: BookService
+    @Autowired
+    private lateinit var contactService: ContactService
 
     fun getAll(): List<AuthorView> {
         return authorRepository.findAll().map { it.toView() }
@@ -44,11 +47,23 @@ class AuthorService(
 
     fun delete(authorId: Int) {
         val author = authorRepository.findOrException(authorId)
+        val contact = author.contact
+        if (contact != null) {
+            contactService.delete(contact.id)
+        }
         return authorRepository.delete(author)
     }
 
+    fun findModelByContact(contact: Contact): Author {
+        return authorRepository.findByContactOrException(contact)
+    }
+
     fun getById(authorId: Int): AuthorView {
-        return authorRepository.findOrException(authorId).toView()
+        return this.getModelById(authorId).toView()
+    }
+
+    fun getModelById(authorId: Int): Author{
+        return authorRepository.findOrException(authorId)
     }
 
     fun Author.toView(): AuthorView {
