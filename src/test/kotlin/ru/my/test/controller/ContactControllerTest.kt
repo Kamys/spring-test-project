@@ -189,8 +189,7 @@ class ContactControllerTest : AbstractIntegrationTest() {
         author.contact = contact
         authorRepository.save(author)
 
-        //mvc.delete("/contacts/${contact.id}").andExpect(status().isOk)
-        contactRepository.delete(contact)
+        mvc.delete("/contacts/${contact.id}").andExpect(status().isOk)
 
         contactRepository.count().shouldBe(0)
         authorRepository.count().shouldBe(1)

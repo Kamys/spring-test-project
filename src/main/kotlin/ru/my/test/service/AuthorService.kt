@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.my.test.entity.Author
+import ru.my.test.entity.Contact
 import ru.my.test.model.AuthorAddRequest
 import ru.my.test.model.AuthorEditRequest
 import ru.my.test.model.AuthorView
@@ -51,6 +52,10 @@ class AuthorService(
             contactService.delete(contact.id)
         }
         return authorRepository.delete(author)
+    }
+
+    fun findModelByContact(contact: Contact): Author {
+        return authorRepository.findByContactOrException(contact)
     }
 
     fun getById(authorId: Int): AuthorView {

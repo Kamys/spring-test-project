@@ -25,6 +25,7 @@ class ContactService(
         val author = authorService.getModelById(request.authorId)
 
         val contact = Contact(author = author, email = "", phone = "")
+        author.contact = contact
 
         if (!request.email.isNullOrEmpty()) {
             contact.email = request.email
@@ -51,6 +52,8 @@ class ContactService(
 
     fun delete(contactId: Int) {
         val contact = contactRepository.findOrException(contactId)
+        val author = authorService.findModelByContact(contact)
+        author.contact = null
         contactRepository.delete(contact)
     }
 
