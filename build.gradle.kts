@@ -10,7 +10,7 @@ plugins {
     kotlin("jvm") version kotlinVersion
     application
 }
-group = "me.nikita"
+group = "ru.my.test"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -47,5 +47,5 @@ tasks {
     }
 }
 application {
-    mainClassName = "MainKt"
+    mainClassName = "ru.my.test.ApplicationKt"
 }
