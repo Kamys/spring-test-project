@@ -1,8 +1,8 @@
 package ru.my.test.service
 
-import javassist.NotFoundException
 import org.springframework.data.jpa.repository.JpaRepository
 import ru.my.test.entity.Book
+import ru.my.test.model.NotFoundException
 
 interface BookRepository : JpaRepository<Book, Int> {
     fun existsByName(name: String): Boolean

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import ru.my.test.AbstractIntegrationTest
+import ru.my.test.entity.BookRating
+import ru.my.test.entity.Review
 import ru.my.test.model.*
 import ru.my.test.service.AuthorRepository
 import ru.my.test.service.BookRepository
@@ -19,8 +21,10 @@ import javax.transaction.Transactional
 class BookControllerTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var bookRepository: BookRepository
+
     @Autowired
     private lateinit var authorRepository: AuthorRepository
+
     @Autowired
     private lateinit var reviewRepository: ReviewRepository
 
@@ -70,11 +74,16 @@ class BookControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `GET books with reviews`() {
-        val bookFirst = modelHelper.createBook()
-        val bookSecond = modelHelper.createBook()
+        val (bookFirst, bookSecond) = transactional {
+            val bookFirst = modelHelper.createBook().apply {
+                addReview(Review(text = "Review 1", rating = BookRating.GOOD))
+                addReview(Review(text = "Review 2", rating = BookRating.NORMAL))
+                bookRepository.save(this)
+            }
+            val bookSecond = modelHelper.createBook()
 
-        val reviewFirst = modelHelper.createReview(bookFirst)
-        val reviewSecond = modelHelper.createReview(bookFirst)
+            Pair(bookFirst, bookSecond)
+        }
 
         val response = mvc.get("/books")
             .andExpect(status().isOk)
@@ -85,7 +94,7 @@ class BookControllerTest : AbstractIntegrationTest() {
         response.findOrException { it.id == bookFirst.id }
             .reviews
             .map { it.id }
-            .shouldContainExactly(listOf(reviewFirst.id, reviewSecond.id))
+            .shouldContainExactly(bookFirst.reviews.map { it.id })
         response.findOrException { it.id == bookSecond.id }
             .authorIds
             .shouldBeEmpty()
@@ -145,7 +154,7 @@ class BookControllerTest : AbstractIntegrationTest() {
         val bookRequest = BookAddRequest(bookTitle)
 
         val response = mvc.post("/books", bookRequest.asJson())
-            .andExpect(status().isOk)
+            .andExpect(status().isCreated)
             .andReturn()
             .asObject<BookView>()
 
@@ -182,7 +191,7 @@ class BookControllerTest : AbstractIntegrationTest() {
         )
 
         val response = mvc.post("/books", bookRequest.asJson())
-            .andExpect(status().isOk)
+            .andExpect(status().isCreated)
             .andReturn()
             .asObject<BookView>()
 
@@ -201,7 +210,7 @@ class BookControllerTest : AbstractIntegrationTest() {
         )
 
         val response = mvc.post("/books", bookRequest.asJson())
-            .andExpect(status().isOk)
+            .andExpect(status().isCreated)
             .andReturn()
             .asObject<BookView>()
 
@@ -316,7 +325,7 @@ class BookControllerTest : AbstractIntegrationTest() {
         val bookForDelete = modelHelper.createBook()
         val book = modelHelper.createBook()
 
-        mvc.delete("/books/${bookForDelete.id}").andExpect(status().isOk)
+        mvc.delete("/books/${bookForDelete.id}").andExpect(status().isNoContent)
 
         val allBook = bookRepository.findAll()
         allBook.size.shouldBe(1)
@@ -331,7 +340,7 @@ class BookControllerTest : AbstractIntegrationTest() {
 
         val bookForDelete = modelHelper.createBook(authors = listOf(authorFirst, authorSecond))
 
-        mvc.delete("/books/${bookForDelete.id}").andExpect(status().isOk)
+        mvc.delete("/books/${bookForDelete.id}").andExpect(status().isNoContent)
 
         val allBook = bookRepository.findAll()
         allBook.shouldBeEmpty()
@@ -341,17 +350,21 @@ class BookControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    fun `DELETE book also delete contact`() {
-        val bookForDelete = modelHelper.createBook()
-        modelHelper.createReview(book = bookForDelete)
-        modelHelper.createReview(book = bookForDelete)
+    fun `DELETE book also delete review`() {
+        val bookForDelete = transactional {
+            val book = modelHelper.createBook().apply {
+                addReview(Review(text = "Review 1", rating = BookRating.GOOD))
+                addReview(Review(text = "Review 2", rating = BookRating.NORMAL))
+                bookRepository.save(this)
+            }
+            book
+        }
 
-        bookRepository.count().shouldBe(1)
-        reviewRepository.count().shouldBe(2)
+        mvc.delete("/books/${bookForDelete.id}").andExpect(status().isNoContent)
 
-        mvc.delete("/books/${bookForDelete.id}").andExpect(status().isOk)
-
-        bookRepository.count().shouldBe(0)
-        reviewRepository.count().shouldBe(0)
+        transactional {
+            bookRepository.count().shouldBe(0)
+            reviewRepository.count().shouldBe(0)
+        }
     }
 }

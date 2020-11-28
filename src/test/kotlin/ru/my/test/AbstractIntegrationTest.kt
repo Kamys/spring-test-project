@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.*
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.transaction.support.TransactionTemplate
 import ru.my.test.ModelHelper
 import java.nio.charset.StandardCharsets
 
@@ -23,6 +24,13 @@ abstract class AbstractIntegrationTest {
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
+
+    @Autowired
+    lateinit var transactionTemplate: TransactionTemplate
+
+    fun <R> transactional(block: () -> R): R {
+        return transactionTemplate.execute { block.invoke() }!!
+    }
 
     protected val faker = Faker()
 

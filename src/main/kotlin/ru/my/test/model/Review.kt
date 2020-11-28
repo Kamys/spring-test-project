@@ -7,22 +7,18 @@ import javax.validation.constraints.NotNull
 class ReviewView(
     val id: Int,
     val text: String,
-    val rating: BookRating,
-    val bookId: Int,
+    val rating: BookRating
 )
 
 class ReviewAddRequest(
     @field:Length(min = 5, max=200)
-    val text: String?,
+    val text: String,
     @field:NotNull
     val rating: BookRating,
-    @field:NotNull
-    val bookId: Int,
 )
 
 class ReviewEditRequest(
     @field:Length(min = 5, max=200)
-    val text: String? = null,
-    val rating: BookRating? = null,
-    val bookId: Int? = null,
+    val text: String,
+    val rating: BookRating,
 )

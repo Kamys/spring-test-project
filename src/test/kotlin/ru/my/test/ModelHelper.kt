@@ -25,9 +25,12 @@ class ModelHelper {
     @Autowired
     private lateinit var contactRepository: ContactRepository
 
-    // TODO: удалить faker так как нет гарантии что он возвращает уникальные данные. Так же усложняет код
-    private val faker = Faker()
+    companion object {
+        private val faker = Faker()
+    }
 
+
+    @Transactional
     fun createBook(
         name: String = faker.book().title(),
         authors: List<Author> = emptyList()
@@ -37,6 +40,7 @@ class ModelHelper {
         return book
     }
 
+    @Transactional
     fun createAuthor(
         name: String = faker.book().author(),
         books: List<Book> = emptyList()
@@ -46,16 +50,18 @@ class ModelHelper {
         return author
     }
 
+    @Transactional
     fun createReview(
         book: Book,
         rating: BookRating = BookRating.NORMAL,
         text: String = "",
     ): Review {
-        val review = Review(text = text, book = book, rating = rating)
+        val review = Review(text = text, rating = rating)
         reviewRepository.save(review)
         return review
     }
 
+    @Transactional
     fun createContact(
         author: Author = Author(name = "Author"),
         phone: String = faker.phoneNumber().phoneNumber(),

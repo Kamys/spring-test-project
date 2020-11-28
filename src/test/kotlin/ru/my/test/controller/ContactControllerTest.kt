@@ -99,7 +99,7 @@ class ContactControllerTest : AbstractIntegrationTest() {
         )
 
         val response = mvc.post("/contacts", request.asJson())
-            .andExpect(status().isOk)
+            .andExpect(status().isCreated)
             .andReturn()
             .asObject<ContactView>()
 
@@ -172,7 +172,7 @@ class ContactControllerTest : AbstractIntegrationTest() {
         val contactForDelete = modelHelper.createContact()
         val contact = modelHelper.createContact()
 
-        mvc.delete("/contacts/${contactForDelete.id}").andExpect(status().isOk)
+        mvc.delete("/contacts/${contactForDelete.id}").andExpect(status().isNoContent)
 
         contactRepository.count().shouldBe(1)
         contactRepository.findOrException(contact.id).let {
@@ -189,7 +189,7 @@ class ContactControllerTest : AbstractIntegrationTest() {
         author.contact = contact
         authorRepository.save(author)
 
-        mvc.delete("/contacts/${contact.id}").andExpect(status().isOk)
+        mvc.delete("/contacts/${contact.id}").andExpect(status().isNoContent)
 
         contactRepository.count().shouldBe(0)
         authorRepository.count().shouldBe(1)

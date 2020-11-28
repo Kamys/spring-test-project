@@ -11,7 +11,7 @@ class BookView(
     val id: Int,
     val name: String,
     val authorIds: List<Int> = emptyList(),
-    var reviews: List<ReviewView> = emptyList(),
+    val reviews: List<ReviewView> = emptyList(),
 )
 
 class BookAddRequest(

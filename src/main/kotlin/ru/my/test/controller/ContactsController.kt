@@ -1,5 +1,6 @@
 package ru.my.test.controller
 
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import ru.my.test.model.ContactAddRequest
 import ru.my.test.model.ContactEditRequest
@@ -14,21 +15,25 @@ class ContactsController(
 ) {
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     fun getContacts(): List<ContactView> {
         return contactService.getAll()
     }
 
     @GetMapping("/{contactId}")
+    @ResponseStatus(HttpStatus.OK)
     fun getContacts(@PathVariable("contactId") contactId: Int): Any {
         return contactService.getById(contactId)
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     fun createContact(@Valid @RequestBody request: ContactAddRequest): ContactView {
         return contactService.add(request)
     }
 
     @PutMapping("/{contactId}")
+    @ResponseStatus(HttpStatus.OK)
     fun editContact(
         @PathVariable("contactId") contactId: Int,
         @RequestBody @Valid request: ContactEditRequest
@@ -37,6 +42,7 @@ class ContactsController(
     }
 
     @DeleteMapping("/{contactId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteContact(
         @PathVariable("contactId") contactId: Int
     ) {

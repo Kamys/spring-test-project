@@ -10,5 +10,5 @@ fun Book.toView(): BookView {
 }
 
 fun Review.toView(): ReviewView {
-    return ReviewView(this.id, this.text, this.rating, this.book.id)
+    return ReviewView(this.id, this.text, this.rating)
 }

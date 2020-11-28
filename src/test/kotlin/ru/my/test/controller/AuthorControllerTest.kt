@@ -80,7 +80,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
         val authorRequest = AuthorAddRequest(authorTitle, emptyList())
 
         val response = mvc.post("/authors", authorRequest.asJson())
-            .andExpect(status().isOk)
+            .andExpect(status().isCreated)
             .andReturn()
             .asObject<AuthorView>()
 
@@ -103,7 +103,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
         )
 
         val response = mvc.post("/authors", authorRequest.asJson())
-            .andExpect(status().isOk)
+            .andExpect(status().isCreated)
             .andReturn()
             .asObject<AuthorView>()
 
@@ -215,7 +215,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
         val authorForDelete = modelHelper.createAuthor()
         val author = modelHelper.createAuthor()
 
-        mvc.delete("/authors/${authorForDelete.id}").andExpect(status().isOk)
+        mvc.delete("/authors/${authorForDelete.id}").andExpect(status().isNoContent)
 
         val allAuthor = authorRepository.findAll()
         allAuthor.size.shouldBe(1)
@@ -229,7 +229,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
         val author = modelHelper.createAuthor()
         modelHelper.createContact(author)
 
-        mvc.delete("/authors/${author.id}").andExpect(status().isOk)
+        mvc.delete("/authors/${author.id}").andExpect(status().isNoContent)
 
         authorRepository.count().shouldBe(0)
         contactRepository.count().shouldBe(0)
