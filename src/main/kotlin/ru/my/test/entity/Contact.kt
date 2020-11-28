@@ -8,6 +8,7 @@ class Contact(
     id: Int = 0,
     var phone: String,
     var email: String,
+) : BaseEntity(id) {
     @OneToOne(mappedBy = "contact")
-    var author: Author
-) : BaseEntity(id)
+    lateinit var author: Author
+}

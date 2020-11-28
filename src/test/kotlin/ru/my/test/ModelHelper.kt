@@ -67,7 +67,7 @@ class ModelHelper {
         phone: String = faker.phoneNumber().phoneNumber(),
         email: String = faker.internet().emailAddress(),
     ): Contact {
-        val contact = Contact(phone = phone, email = email, author = author)
+        val contact = Contact(phone = phone, email = email)
         author.contact = contact
         authorRepository.save(author)
         return contact

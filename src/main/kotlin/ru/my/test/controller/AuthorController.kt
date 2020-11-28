@@ -2,10 +2,9 @@ package ru.my.test.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import ru.my.test.model.AuthorAddRequest
-import ru.my.test.model.AuthorEditRequest
-import ru.my.test.model.AuthorView
+import ru.my.test.model.*
 import ru.my.test.service.AuthorService
+import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
 
 @RestController
@@ -47,5 +46,14 @@ class AuthorController(
         @PathVariable("authorId") authorId: Int
     ) {
         authorService.delete(authorId)
+    }
+
+    @PutMapping("/{authorId}/contacts")
+    fun editContact(
+        @PathVariable("authorId") authorId: Int,
+        @RequestBody @Valid request: ContactEditRequest,
+        response: HttpServletResponse
+    ): ContactView {
+        return authorService.editContact(authorId, request, response)
     }
 }
