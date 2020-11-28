@@ -34,12 +34,9 @@ class AuthorService(
     }
 
     fun edit(authorId: Int, request: AuthorEditRequest): AuthorView {
-        val author = authorRepository.findOrException(authorId)
-        if (!request.name.isNullOrEmpty()) {
-            author.name = request.name
-        }
-        if (!request.bookIds.isNullOrEmpty()) {
-            author.books = bookService.getAllByIds(request.bookIds)
+        val author = authorRepository.findOrException(authorId).apply {
+            name = request.name
+            books = bookService.getAllByIds(request.bookIds)
         }
         return authorRepository.save(author).toView()
     }
@@ -47,6 +44,7 @@ class AuthorService(
     fun delete(authorId: Int) {
         val author = authorRepository.findOrException(authorId)
         author.contact?.run {
+            author.contact = null
             contactRepository.delete(this)
         }
         return authorRepository.delete(author)
@@ -91,6 +89,6 @@ class AuthorService(
 
 
     fun Contact.toView(): ContactView {
-        return ContactView(this.id, this.phone, this.email, this.author.id)
+        return ContactView(this.id, this.phone, this.email)
     }
 }

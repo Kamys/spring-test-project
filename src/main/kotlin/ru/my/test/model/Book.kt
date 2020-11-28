@@ -10,8 +10,8 @@ import javax.validation.constraints.NotNull
 class BookView(
     val id: Int,
     val name: String,
-    val authorIds: List<Int> = emptyList(),
-    val reviews: List<ReviewView> = emptyList(),
+    val authorIds: List<Int> = mutableListOf(),
+    val reviews: List<ReviewView> = mutableListOf(),
 )
 
 class BookAddRequest(
@@ -19,12 +19,12 @@ class BookAddRequest(
     @field:UniqueBookName
     val name: String,
     @field:UniqueElements
-    val authorIds: List<Int>? = null,
+    val authorIds: List<Int> = mutableListOf(),
 )
 
 class BookEditRequest(
     @field:UniqueBookName
-    val name: String? = null,
+    val name: String,
     @field:UniqueElements
-    val authorIds: List<Int>? = null,
+    val authorIds: List<Int> = mutableListOf(),
 )

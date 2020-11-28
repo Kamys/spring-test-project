@@ -61,16 +61,12 @@ class ModelHelper {
         return review
     }
 
-    @Transactional
-    fun createContact(
+    fun createRandomContact(
         author: Author = Author(name = "Author"),
         phone: String = faker.phoneNumber().phoneNumber(),
         email: String = faker.internet().emailAddress(),
     ): Contact {
-        val contact = Contact(phone = phone, email = email)
-        author.contact = contact
-        authorRepository.save(author)
-        return contact
+        return Contact(phone = phone, email = email)
     }
 
 }

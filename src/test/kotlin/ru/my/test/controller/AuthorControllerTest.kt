@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import ru.my.test.AbstractIntegrationTest
+import ru.my.test.entity.Contact
 import ru.my.test.model.*
 import ru.my.test.service.AuthorRepository
 import ru.my.test.service.ContactRepository
@@ -91,7 +92,6 @@ class AuthorControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `POST created new author with books`() {
         val bookFirst = modelHelper.createBook()
         val bookSecond = modelHelper.createBook()
@@ -166,7 +166,6 @@ class AuthorControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `PUT edited booksIds`() {
         val bookFirst = modelHelper.createBook()
         val bookSecond = modelHelper.createBook()
@@ -174,7 +173,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
         val editedAuthor = modelHelper.createAuthor(books = listOf(bookFirst))
 
         val newBookIds = listOf(bookSecond.id)
-        val request = AuthorEditRequest(bookIds = newBookIds)
+        val request = AuthorEditRequest(bookIds = newBookIds, name = "New name")
 
         val response = mvc.put("/authors/${editedAuthor.id}", request.asJson())
             .andExpect(status().isOk)
@@ -191,11 +190,10 @@ class AuthorControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `PUT return 404 if set nonexistent book ID in booksIds`() {
         val editedAuthor = modelHelper.createAuthor()
 
-        val request = AuthorEditRequest(bookIds = listOf(99))
+        val request = AuthorEditRequest(bookIds = listOf(99), name = "New name")
 
         val response = mvc.put("/authors/${editedAuthor.id}", request.asJson())
             .andExpect(status().isNotFound)
@@ -224,15 +222,19 @@ class AuthorControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `DELETE author also delete contact`() {
-        val author = modelHelper.createAuthor()
-        modelHelper.createContact(author)
+        val author = transactional {
+            val author = modelHelper.createAuthor()
+            author.contact = Contact(phone = "Old phone number", email = "Old email")
+            authorRepository.save(author)
+        }
 
         mvc.delete("/authors/${author.id}").andExpect(status().isNoContent)
 
-        authorRepository.count().shouldBe(0)
-        contactRepository.count().shouldBe(0)
-        contactRepository.findAll()
+        transactional {
+            authorRepository.count().shouldBe(0)
+            contactRepository.count().shouldBe(0)
+            contactRepository.findAll()
+        }
     }
 }

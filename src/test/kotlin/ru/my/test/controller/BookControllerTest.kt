@@ -179,7 +179,6 @@ class BookControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `POST created new book with authors`() {
         val authorFirst = modelHelper.createAuthor()
         val authorSecond = modelHelper.createAuthor()
@@ -202,7 +201,6 @@ class BookControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `POST created new book with empty authors`() {
         val bookRequest = BookAddRequest(
             name = "Book",
@@ -221,7 +219,6 @@ class BookControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `POST return 404 if authorIds has nonexistent ID`() {
         val bookRequest = BookAddRequest(
             name = "Book",
@@ -273,7 +270,6 @@ class BookControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `PUT book edit authorIds`() {
         val authorFirst = modelHelper.createAuthor()
         val authorSecond = modelHelper.createAuthor()
@@ -283,7 +279,7 @@ class BookControllerTest : AbstractIntegrationTest() {
         val bookSecond = modelHelper.createBook()
 
         val newAuthorIds = listOf(authorThird.id)
-        val request = BookEditRequest(authorIds = newAuthorIds)
+        val request = BookEditRequest(authorIds = newAuthorIds, name = "New name")
 
         val response = mvc.put("/books/${editedBook.id}", request.asJson())
             .andExpect(status().isOk)
@@ -300,7 +296,6 @@ class BookControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `PUT return 400 if new name not unique`() {
         val bookFirst = modelHelper.createBook()
         val bookSecond = modelHelper.createBook()
