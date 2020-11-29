@@ -23,6 +23,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
     @BeforeEach
     fun beforeEach() {
         authorRepository.deleteAll()
+        contactRepository.deleteAll()
     }
 
     @Test
