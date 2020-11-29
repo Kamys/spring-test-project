@@ -10,7 +10,7 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/books")
 class BookController(
-    private var bookService: BookService
+    private val bookService: BookService
 ) {
 
     @GetMapping

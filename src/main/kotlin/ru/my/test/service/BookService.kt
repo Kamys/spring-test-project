@@ -3,12 +3,9 @@ package ru.my.test.service
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.client.HttpClientErrorException
 import ru.my.test.entity.Book
 import ru.my.test.entity.Review
 import ru.my.test.model.*
-import ru.my.test.service.mapper.toView
-import java.net.http.HttpHeaders
 
 @Service
 @Transactional
@@ -51,10 +48,6 @@ class BookService(
         return bookRepository.findOrException(bookId).toView()
     }
 
-    fun getModelById(bookId: Long): Book {
-        return bookRepository.findOrException(bookId)
-    }
-
     fun getAllByIds(booksIds: List<Long>): List<Book> {
         return bookRepository.findAllByIdOrException(booksIds)
     }
@@ -90,5 +83,13 @@ class BookService(
         review.text = request.text
         review.rating = request.rating
         return review.toView()
+    }
+
+    fun Review.toView(): ReviewView {
+        return ReviewView(this.id, this.text, this.rating)
+    }
+
+    fun Book.toView(): BookView {
+        return BookView(this.id, this.name, this.authors.map { it.id }, this.reviews.map { it.toView() })
     }
 }
