@@ -3,12 +3,11 @@ package ru.my.test
 import com.github.javafaker.Faker
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import ru.my.test.entity.*
+import org.springframework.transaction.annotation.Transactional
+import ru.my.test.entity.Author
+import ru.my.test.entity.Book
 import ru.my.test.service.AuthorRepository
 import ru.my.test.service.BookRepository
-import ru.my.test.service.ContactRepository
-import ru.my.test.service.ReviewRepository
-import org.springframework.transaction.annotation.Transactional
 
 @Component
 class ModelHelper {

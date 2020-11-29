@@ -1,6 +1,8 @@
 package ru.my.test.entity
 
-import javax.persistence.*
+import javax.persistence.Entity
+import javax.persistence.OneToOne
+import javax.persistence.Table
 
 @Entity
 @Table(name = "contacts")

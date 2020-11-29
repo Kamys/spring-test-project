@@ -1,6 +1,5 @@
 package ru.my.test.service
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.my.test.entity.Book
@@ -74,7 +73,7 @@ class BookService(
     fun editReview(bookId: Long, reviewId: Long, request: ReviewEditRequest): ReviewView {
         bookRepository.findOrException(bookId)
         val review = reviewRepository.findOrException(reviewId)
-        if  (review.book.id != bookId) {
+        if (review.book.id != bookId) {
             throw BadRequest("У книги с id $bookId нет отзыва с id: $reviewId")
         }
         review.text = request.text

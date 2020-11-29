@@ -1,6 +1,5 @@
 package ru.my.test.controller
 
-import ru.my.test.model.NotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.BindingResult

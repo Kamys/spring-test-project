@@ -10,7 +10,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import ru.my.test.AbstractIntegrationTest
 import ru.my.test.entity.BookRating
 import ru.my.test.entity.Review
-import ru.my.test.model.*
+import ru.my.test.model.ReviewAddRequest
+import ru.my.test.model.ReviewEditRequest
+import ru.my.test.model.ReviewView
 import ru.my.test.service.AuthorRepository
 import ru.my.test.service.BookRepository
 import ru.my.test.service.ReviewRepository
@@ -20,8 +22,10 @@ import ru.my.test.service.findOrException
 class ReviewControllerTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var bookRepository: BookRepository
+
     @Autowired
     private lateinit var authorRepository: AuthorRepository
+
     @Autowired
     private lateinit var reviewRepository: ReviewRepository
 

@@ -17,6 +17,7 @@ import ru.my.test.service.findOrException
 class AuthorControllerTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var authorRepository: AuthorRepository
+
     @Autowired
     private lateinit var contactRepository: ContactRepository
 

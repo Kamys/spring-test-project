@@ -1,9 +1,9 @@
 package ru.my.test.service
 
-import ru.my.test.model.NotFoundException
 import org.springframework.data.jpa.repository.JpaRepository
 import ru.my.test.entity.Author
 import ru.my.test.entity.Contact
+import ru.my.test.model.NotFoundException
 import java.util.*
 
 interface AuthorRepository : JpaRepository<Author, Long> {

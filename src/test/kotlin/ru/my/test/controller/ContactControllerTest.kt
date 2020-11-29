@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import ru.my.test.AbstractIntegrationTest
 import ru.my.test.entity.Contact
-import ru.my.test.model.*
+import ru.my.test.model.ContactEditRequest
+import ru.my.test.model.ContactView
 import ru.my.test.service.AuthorRepository
 import ru.my.test.service.ContactRepository
 import ru.my.test.service.findOrException
@@ -16,6 +17,7 @@ import ru.my.test.service.findOrException
 class ContactControllerTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var contactRepository: ContactRepository
+
     @Autowired
     private lateinit var authorRepository: AuthorRepository
 

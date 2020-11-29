@@ -2,7 +2,6 @@ package ru.my.test.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import ru.my.test.entity.Review
 import ru.my.test.model.*
 import ru.my.test.service.BookService
 import javax.validation.Valid

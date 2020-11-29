@@ -15,7 +15,6 @@ import ru.my.test.service.AuthorRepository
 import ru.my.test.service.BookRepository
 import ru.my.test.service.ReviewRepository
 import ru.my.test.service.findOrException
-import javax.transaction.Transactional
 
 
 class BookControllerTest : AbstractIntegrationTest() {

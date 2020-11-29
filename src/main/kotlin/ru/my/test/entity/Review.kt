@@ -17,7 +17,7 @@ class Review(
     var text: String,
     var rating: BookRating,
 ) : BaseEntity(id) {
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     lateinit var book: Book
 }
