@@ -127,10 +127,12 @@ class BookControllerTest : AbstractIntegrationTest() {
         response.id.shouldBe(book.id)
         response.name.shouldBe(book.name)
 
-        val allBooks = bookRepository.findAll()
-        allBooks.size.shouldBe(1)
-        allBooks.first().id.shouldBe(book.id)
-        allBooks.first().name.shouldBe(book.name)
+        transactional {
+            val allBooks = bookRepository.findAll()
+            allBooks.size.shouldBe(1)
+            allBooks.first().id.shouldBe(book.id)
+            allBooks.first().name.shouldBe(book.name)
+        }
     }
 
     @Test
@@ -159,9 +161,12 @@ class BookControllerTest : AbstractIntegrationTest() {
             .asObject<BookView>()
 
         response.name.shouldBe(bookTitle)
-        val allBooks = bookRepository.findAll()
-        allBooks.size.shouldBe(1)
-        allBooks.first().name.shouldBe(bookTitle)
+
+        transactional {
+            val allBooks = bookRepository.findAll()
+            allBooks.size.shouldBe(1)
+            allBooks.first().name.shouldBe(bookTitle)
+        }
     }
 
     @Test
@@ -195,9 +200,12 @@ class BookControllerTest : AbstractIntegrationTest() {
             .asObject<BookView>()
 
         response.authorIds.shouldContainExactly(authorIds)
-        val allBooks = bookRepository.findAll()
-        allBooks.size.shouldBe(1)
-        allBooks.first().authors.map { it.id }.shouldContainExactly(authorIds)
+
+        transactional {
+            val allBooks = bookRepository.findAll()
+            allBooks.size.shouldBe(1)
+            allBooks.first().authors.map { it.id }.shouldContainExactly(authorIds)
+        }
     }
 
     @Test
@@ -213,9 +221,12 @@ class BookControllerTest : AbstractIntegrationTest() {
             .asObject<BookView>()
 
         response.authorIds.shouldBeEmpty()
-        val allBooks = bookRepository.findAll()
-        allBooks.size.shouldBe(1)
-        allBooks.first().authors.shouldBeEmpty()
+
+        transactional {
+            val allBooks = bookRepository.findAll()
+            allBooks.size.shouldBe(1)
+            allBooks.first().authors.shouldBeEmpty()
+        }
     }
 
     @Test
@@ -265,8 +276,10 @@ class BookControllerTest : AbstractIntegrationTest() {
         response.id.shouldBe(editedBook.id)
         response.name.shouldBe(request.name)
 
-        bookRepository.findOrException(editedBook.id).name.shouldBe(request.name)
-        bookRepository.findOrException(bookSecond.id).name.shouldBe(bookSecond.name)
+        transactional {
+            bookRepository.findOrException(editedBook.id).name.shouldBe(request.name)
+            bookRepository.findOrException(bookSecond.id).name.shouldBe(bookSecond.name)
+        }
     }
 
     @Test
@@ -289,10 +302,12 @@ class BookControllerTest : AbstractIntegrationTest() {
         response.id.shouldBe(editedBook.id)
         response.authorIds.shouldContainExactly(newAuthorIds)
 
-        bookRepository.findOrException(editedBook.id).authors
-            .map { it.id }
-            .shouldContainExactly(newAuthorIds)
-        bookRepository.findOrException(bookSecond.id).authors.shouldBeEmpty()
+        transactional {
+            bookRepository.findOrException(editedBook.id).authors
+                .map { it.id }
+                .shouldContainExactly(newAuthorIds)
+            bookRepository.findOrException(bookSecond.id).authors.shouldBeEmpty()
+        }
     }
 
     @Test
@@ -322,10 +337,12 @@ class BookControllerTest : AbstractIntegrationTest() {
 
         mvc.delete("/books/${bookForDelete.id}").andExpect(status().isNoContent)
 
-        val allBook = bookRepository.findAll()
-        allBook.size.shouldBe(1)
-        allBook.first().id.shouldBe(book.id)
-        allBook.first().name.shouldBe(book.name)
+        transactional {
+            val allBook = bookRepository.findAll()
+            allBook.size.shouldBe(1)
+            allBook.first().id.shouldBe(book.id)
+            allBook.first().name.shouldBe(book.name)
+        }
     }
 
     @Test

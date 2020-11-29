@@ -19,12 +19,6 @@ class ModelHelper {
     @Autowired
     private lateinit var authorRepository: AuthorRepository
 
-    @Autowired
-    private lateinit var reviewRepository: ReviewRepository
-
-    @Autowired
-    private lateinit var contactRepository: ContactRepository
-
     companion object {
         private val faker = Faker()
     }
@@ -48,25 +42,6 @@ class ModelHelper {
         val author = Author(name = name, books = books)
         authorRepository.save(author)
         return author
-    }
-
-    @Transactional
-    fun createReview(
-        book: Book,
-        rating: BookRating = BookRating.NORMAL,
-        text: String = "",
-    ): Review {
-        val review = Review(text = text, rating = rating)
-        reviewRepository.save(review)
-        return review
-    }
-
-    fun createRandomContact(
-        author: Author = Author(name = "Author"),
-        phone: String = faker.phoneNumber().phoneNumber(),
-        email: String = faker.internet().emailAddress(),
-    ): Contact {
-        return Contact(phone = phone, email = email)
     }
 
 }

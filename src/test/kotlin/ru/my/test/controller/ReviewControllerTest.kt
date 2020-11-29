@@ -67,6 +67,7 @@ class ReviewControllerTest : AbstractIntegrationTest() {
     @Test
     fun `POST created new review in book`() {
         val book = modelHelper.createBook()
+
         val bookRequest = ReviewAddRequest("Review 1", BookRating.NORMAL)
 
         val response = mvc.post("/books/${book.id}/reviews", bookRequest.asJson())
@@ -108,14 +109,16 @@ class ReviewControllerTest : AbstractIntegrationTest() {
         response.text.shouldBe(request.text)
         response.rating.shouldBe(request.rating)
 
-        reviewRepository.count().shouldBe(2)
-        reviewRepository.findOrException(response.id).also {
-            it.text.shouldBe(request.text)
-            it.rating.shouldBe(request.rating)
-        }
-        reviewRepository.findOrException(notEditReview.id).also {
-            it.text.shouldBe(notEditReview.text)
-            it.rating.shouldBe(notEditReview.rating)
+        transactional {
+            reviewRepository.count().shouldBe(2)
+            reviewRepository.findOrException(response.id).also {
+                it.text.shouldBe(request.text)
+                it.rating.shouldBe(request.rating)
+            }
+            reviewRepository.findOrException(notEditReview.id).also {
+                it.text.shouldBe(notEditReview.text)
+                it.rating.shouldBe(notEditReview.rating)
+            }
         }
     }
 
@@ -133,6 +136,8 @@ class ReviewControllerTest : AbstractIntegrationTest() {
 
         mvc.delete("/books/${book.id}/reviews/${reviewForDelete.id}").andExpect(status().isNoContent)
 
-        reviewRepository.count().shouldBe(1)
+        transactional {
+            reviewRepository.count().shouldBe(1)
+        }
     }
 }

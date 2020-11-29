@@ -46,9 +46,9 @@ abstract class AbstractIntegrationTest {
 
     fun Any.asJson(): String = objectMapper.writeValueAsString(this)
 
-    @Throws(NullPointerException::class)
+    @Throws(Exception::class)
     fun <T> Iterable<T>.findOrException(predicate: (T) -> Boolean): T {
-        return this.find(predicate) ?: throw NullPointerException("Failed find element")
+        return this.find(predicate) ?: throw Exception("Failed find element")
     }
 
     fun MockMvc.get(

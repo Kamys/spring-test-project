@@ -1,7 +1,6 @@
 package ru.my.test.controller
 
 import io.kotest.matchers.collections.shouldContainExactly
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -13,7 +12,6 @@ import ru.my.test.model.*
 import ru.my.test.service.AuthorRepository
 import ru.my.test.service.ContactRepository
 import ru.my.test.service.findOrException
-import javax.transaction.Transactional
 
 
 class AuthorControllerTest : AbstractIntegrationTest() {
@@ -29,7 +27,6 @@ class AuthorControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `GET all exist authors`() {
-
         val authorFirst = modelHelper.createAuthor()
         val authorSecond = modelHelper.createAuthor()
 
@@ -53,11 +50,13 @@ class AuthorControllerTest : AbstractIntegrationTest() {
 
         response.id.shouldBe(author.id)
         response.name.shouldBe(author.name)
-        val allAuthors = authorRepository.findAll()
 
-        allAuthors.size.shouldBe(1)
-        allAuthors.first().id.shouldBe(author.id)
-        allAuthors.first().name.shouldBe(author.name)
+        transactional {
+            val allAuthors = authorRepository.findAll()
+            allAuthors.size.shouldBe(1)
+            allAuthors.first().id.shouldBe(author.id)
+            allAuthors.first().name.shouldBe(author.name)
+        }
     }
 
     @Test
@@ -86,9 +85,12 @@ class AuthorControllerTest : AbstractIntegrationTest() {
             .asObject<AuthorView>()
 
         response.name.shouldBe(authorTitle)
-        val allAuthors = authorRepository.findAll()
-        allAuthors.size.shouldBe(1)
-        allAuthors.first().name.shouldBe(authorTitle)
+
+        transactional {
+            val allAuthors = authorRepository.findAll()
+            allAuthors.size.shouldBe(1)
+            allAuthors.first().name.shouldBe(authorTitle)
+        }
     }
 
     @Test
@@ -109,9 +111,11 @@ class AuthorControllerTest : AbstractIntegrationTest() {
 
         response.bookIds.shouldContainExactly(bookIds)
 
-        val allAuthors = authorRepository.findAll()
-        allAuthors.size.shouldBe(1)
-        allAuthors.first().books.map { it.id }.shouldContainExactly(bookIds)
+        transactional {
+            val allAuthors = authorRepository.findAll()
+            allAuthors.size.shouldBe(1)
+            allAuthors.first().books.map { it.id }.shouldContainExactly(bookIds)
+        }
     }
 
     @Test
@@ -161,18 +165,20 @@ class AuthorControllerTest : AbstractIntegrationTest() {
         response.id.shouldBe(editedAuthor.id)
         response.name.shouldBe(request.name)
 
-        authorRepository.findOrException(editedAuthor.id).name.shouldBe(request.name)
-        authorRepository.findOrException(authorSecond.id).name.shouldBe(authorSecond.name)
+        transactional {
+            authorRepository.findOrException(editedAuthor.id).name.shouldBe(request.name)
+            authorRepository.findOrException(authorSecond.id).name.shouldBe(authorSecond.name)
+        }
     }
 
     @Test
     fun `PUT edited booksIds`() {
-        val bookFirst = modelHelper.createBook()
-        val bookSecond = modelHelper.createBook()
+        val oldBook = modelHelper.createBook()
+        val editedAuthor = modelHelper.createAuthor(books = listOf(oldBook))
 
-        val editedAuthor = modelHelper.createAuthor(books = listOf(bookFirst))
+        val newBook = modelHelper.createBook()
+        val newBookIds = listOf(newBook.id)
 
-        val newBookIds = listOf(bookSecond.id)
         val request = AuthorEditRequest(bookIds = newBookIds, name = "New name")
 
         val response = mvc.put("/authors/${editedAuthor.id}", request.asJson())
@@ -181,12 +187,12 @@ class AuthorControllerTest : AbstractIntegrationTest() {
             .asObject<AuthorView>()
 
         response.id.shouldBe(editedAuthor.id)
-        println(request.bookIds)
-        println(response.bookIds)
         response.bookIds.shouldBe(newBookIds)
 
-        val repAuthor = authorRepository.findOrException(editedAuthor.id)
-        repAuthor.books.map { it.id }.shouldBe(newBookIds)
+        transactional {
+            val repAuthor = authorRepository.findOrException(editedAuthor.id)
+            repAuthor.books.map { it.id }.shouldBe(newBookIds)
+        }
     }
 
     @Test
@@ -215,10 +221,12 @@ class AuthorControllerTest : AbstractIntegrationTest() {
 
         mvc.delete("/authors/${authorForDelete.id}").andExpect(status().isNoContent)
 
-        val allAuthor = authorRepository.findAll()
-        allAuthor.size.shouldBe(1)
-        allAuthor.first().id.shouldBe(author.id)
-        allAuthor.first().name.shouldBe(author.name)
+        transactional {
+            val allAuthor = authorRepository.findAll()
+            allAuthor.size.shouldBe(1)
+            allAuthor.first().id.shouldBe(author.id)
+            allAuthor.first().name.shouldBe(author.name)
+        }
     }
 
     @Test
