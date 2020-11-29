@@ -1,6 +1,5 @@
 package ru.my.test.service
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -16,8 +15,6 @@ class AuthorService(
     private val authorRepository: AuthorRepository,
     private val contactRepository: ContactRepository,
 ) {
-    @Autowired
-    private lateinit var bookService: BookService
 
     fun getAll(): List<AuthorView> {
         return authorRepository.findAll().map { it.toView() }
@@ -25,18 +22,12 @@ class AuthorService(
 
     fun add(request: AuthorAddRequest): AuthorView {
         val author = Author(name = request.name)
-
-        if (!request.bookIds.isNullOrEmpty()) {
-            author.books = bookService.getAllByIds(request.bookIds)
-        }
-
         return authorRepository.save(author).toView()
     }
 
     fun edit(authorId: Long, request: AuthorEditRequest): AuthorView {
         val author = authorRepository.findOrException(authorId).apply {
             name = request.name
-            books = bookService.getAllByIds(request.bookIds)
         }
         return authorRepository.save(author).toView()
     }

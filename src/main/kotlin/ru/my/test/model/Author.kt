@@ -1,6 +1,5 @@
 package ru.my.test.model
 
-import org.hibernate.validator.constraints.UniqueElements
 import javax.validation.constraints.NotNull
 
 class AuthorView(
@@ -11,13 +10,9 @@ class AuthorView(
 
 class AuthorAddRequest(
     @field:NotNull
-    val name: String,
-    @field:UniqueElements
-    val bookIds: List<Long> = mutableListOf(),
+    val name: String
 )
 
 class AuthorEditRequest(
-    val name: String,
-    @field:UniqueElements
-    val bookIds: List<Long> = mutableListOf(),
+    val name: String
 )

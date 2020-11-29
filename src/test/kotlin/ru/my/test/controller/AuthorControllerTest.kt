@@ -78,7 +78,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
     @Test
     fun `POST created new author`() {
         val authorTitle = faker.book().author()
-        val authorRequest = AuthorAddRequest(authorTitle, emptyList())
+        val authorRequest = AuthorAddRequest(authorTitle)
 
         val response = mvc.post("/authors", authorRequest.asJson())
             .andExpect(status().isCreated)
@@ -95,46 +95,6 @@ class AuthorControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    fun `POST created new author with books`() {
-        val bookFirst = modelHelper.createBook()
-        val bookSecond = modelHelper.createBook()
-
-        val bookIds = listOf(bookFirst.id, bookSecond.id)
-        val authorRequest = AuthorAddRequest(
-            name = "Author name",
-            bookIds = bookIds
-        )
-
-        val response = mvc.post("/authors", authorRequest.asJson())
-            .andExpect(status().isCreated)
-            .andReturn()
-            .asObject<AuthorView>()
-
-        response.bookIds.shouldContainExactly(bookIds)
-
-        transactional {
-            val allAuthors = authorRepository.findAll()
-            allAuthors.size.shouldBe(1)
-            allAuthors.first().books.map { it.id }.shouldContainExactly(bookIds)
-        }
-    }
-
-    @Test
-    fun `POST return 404 if bookIds has nonexistent ID`() {
-        val authorRequest = AuthorAddRequest(
-            name = "Author name",
-            bookIds = listOf(99)
-        )
-
-        val response = mvc.post("/authors", authorRequest.asJson())
-            .andExpect(status().isNotFound)
-            .andReturn()
-            .asObject<ApiError>()
-
-        response.detail.shouldBe("Не удалось найти книгу с id: 99")
-    }
-
-    @Test
     fun `POST return 400 if request not correct`() {
         val response = mvc.post("/authors", "{}")
             .andExpect(status().isBadRequest)
@@ -146,7 +106,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `PUT author by nonexistent ID should return 404`() {
-        val request = AuthorEditRequest("Author new name", emptyList())
+        val request = AuthorEditRequest("Author new name")
 
         mvc.put("/authors/99", request.asJson()).andExpect(status().isNotFound)
     }
@@ -156,7 +116,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
         val editedAuthor = modelHelper.createAuthor("Author old name")
         val authorSecond = modelHelper.createAuthor()
 
-        val request = AuthorEditRequest("Author new name", emptyList())
+        val request = AuthorEditRequest("Author new name")
 
         val response = mvc.put("/authors/${editedAuthor.id}", request.asJson())
             .andExpect(status().isOk)
@@ -170,44 +130,6 @@ class AuthorControllerTest : AbstractIntegrationTest() {
             authorRepository.findOrException(editedAuthor.id).name.shouldBe(request.name)
             authorRepository.findOrException(authorSecond.id).name.shouldBe(authorSecond.name)
         }
-    }
-
-    @Test
-    fun `PUT edited booksIds`() {
-        val oldBook = modelHelper.createBook()
-        val editedAuthor = modelHelper.createAuthor(books = listOf(oldBook))
-
-        val newBook = modelHelper.createBook()
-        val newBookIds = listOf(newBook.id)
-
-        val request = AuthorEditRequest(bookIds = newBookIds, name = "New name")
-
-        val response = mvc.put("/authors/${editedAuthor.id}", request.asJson())
-            .andExpect(status().isOk)
-            .andReturn()
-            .asObject<AuthorView>()
-
-        response.id.shouldBe(editedAuthor.id)
-        response.bookIds.shouldBe(newBookIds)
-
-        transactional {
-            val repAuthor = authorRepository.findOrException(editedAuthor.id)
-            repAuthor.books.map { it.id }.shouldBe(newBookIds)
-        }
-    }
-
-    @Test
-    fun `PUT return 404 if set nonexistent book ID in booksIds`() {
-        val editedAuthor = modelHelper.createAuthor()
-
-        val request = AuthorEditRequest(bookIds = listOf(99), name = "New name")
-
-        val response = mvc.put("/authors/${editedAuthor.id}", request.asJson())
-            .andExpect(status().isNotFound)
-            .andReturn()
-            .asObject<ApiError>()
-
-        response.detail.shouldBe("Не удалось найти книгу с id: 99")
     }
 
     @Test

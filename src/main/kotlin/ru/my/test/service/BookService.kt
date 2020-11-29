@@ -12,11 +12,8 @@ import ru.my.test.model.*
 class BookService(
     private val bookRepository: BookRepository,
     private val reviewRepository: ReviewRepository,
+    private val authorService: AuthorService,
 ) {
-
-    @Autowired
-    private lateinit var authorService: AuthorService
-
     fun getAll(): List<BookView> {
         return bookRepository.findAll().map { it.toView() }
     }
