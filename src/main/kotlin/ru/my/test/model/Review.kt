@@ -5,7 +5,7 @@ import ru.my.test.entity.BookRating
 import javax.validation.constraints.NotNull
 
 class ReviewView(
-    val id: Int,
+    val id: Long,
     val text: String,
     val rating: BookRating
 )

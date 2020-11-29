@@ -13,7 +13,7 @@ enum class BookRating {
 @Entity
 @Table(name = "reviews")
 class Review(
-    id: Int = 0,
+    id: Long = 0,
     var text: String,
     var rating: BookRating,
 ) : BaseEntity(id) {

@@ -34,7 +34,7 @@ class BookService(
         return bookRepository.save(book).toView()
     }
 
-    fun edit(bookId: Int, request: BookEditRequest): BookView {
+    fun edit(bookId: Long, request: BookEditRequest): BookView {
         val book = bookRepository.findOrException(bookId).apply {
             name = request.name
             authors = authorService.getAllByIds(request.authorIds)
@@ -42,20 +42,20 @@ class BookService(
         return bookRepository.save(book).toView()
     }
 
-    fun delete(bookId: Int) {
+    fun delete(bookId: Long) {
         val book = bookRepository.findOrException(bookId)
         return bookRepository.delete(book)
     }
 
-    fun getById(bookId: Int): BookView {
+    fun getById(bookId: Long): BookView {
         return bookRepository.findOrException(bookId).toView()
     }
 
-    fun getModelById(bookId: Int): Book {
+    fun getModelById(bookId: Long): Book {
         return bookRepository.findOrException(bookId)
     }
 
-    fun getAllByIds(booksIds: List<Int>): List<Book> {
+    fun getAllByIds(booksIds: List<Long>): List<Book> {
         return bookRepository.findAllByIdOrException(booksIds)
     }
 
@@ -63,11 +63,11 @@ class BookService(
         return bookRepository.existsByName(name)
     }
 
-    fun getReviews(bookId: Int): List<ReviewView> {
+    fun getReviews(bookId: Long): List<ReviewView> {
         return reviewRepository.findByBookId(bookId).map { it.toView() }
     }
 
-    fun addReview(bookId: Int, request: ReviewAddRequest): ReviewView {
+    fun addReview(bookId: Long, request: ReviewAddRequest): ReviewView {
         val book = bookRepository.findOrException(bookId)
         val review = Review(text = request.text, rating = request.rating)
         review.book = book
@@ -75,13 +75,13 @@ class BookService(
         return review.toView()
     }
 
-    fun deleteReview(bookId: Int, reviewId: Int) {
+    fun deleteReview(bookId: Long, reviewId: Long) {
         val book = bookRepository.findOrException(bookId)
         book.reviews.removeIf { it.id == reviewId }
         bookRepository.save(book)
     }
 
-    fun editReview(bookId: Int, reviewId: Int, request: ReviewEditRequest): ReviewView {
+    fun editReview(bookId: Long, reviewId: Long, request: ReviewEditRequest): ReviewView {
         bookRepository.findOrException(bookId)
         val review = reviewRepository.findOrException(reviewId)
         if  (review.book.id != bookId) {

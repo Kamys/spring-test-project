@@ -5,7 +5,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "books")
 class Book(
-    id: Int = 0,
+    id: Long = 0,
     var name: String,
     @ManyToMany
     @JoinTable(

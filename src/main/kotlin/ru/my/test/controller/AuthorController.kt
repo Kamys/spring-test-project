@@ -15,13 +15,13 @@ class AuthorController(
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    fun getAuthors(): Any {
+    fun getAuthors(): List<AuthorView> {
         return authorService.getAll()
     }
 
     @GetMapping("/{authorId}")
     @ResponseStatus(HttpStatus.OK)
-    fun getAuthors(@PathVariable("authorId") authorId: Int): Any {
+    fun getAuthors(@PathVariable("authorId") authorId: Long): AuthorView {
         return authorService.getById(authorId)
     }
 
@@ -34,7 +34,7 @@ class AuthorController(
     @PutMapping("/{authorId}")
     @ResponseStatus(HttpStatus.OK)
     fun editAuthor(
-        @PathVariable("authorId") authorId: Int,
+        @PathVariable("authorId") authorId: Long,
         @RequestBody @Valid request: AuthorEditRequest
     ): AuthorView {
         return authorService.edit(authorId, request)
@@ -43,14 +43,14 @@ class AuthorController(
     @DeleteMapping("/{authorId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteAuthor(
-        @PathVariable("authorId") authorId: Int
+        @PathVariable("authorId") authorId: Long
     ) {
         authorService.delete(authorId)
     }
 
     @PutMapping("/{authorId}/contacts")
     fun editContact(
-        @PathVariable("authorId") authorId: Int,
+        @PathVariable("authorId") authorId: Long,
         @RequestBody @Valid request: ContactEditRequest,
         response: HttpServletResponse
     ): ContactView {

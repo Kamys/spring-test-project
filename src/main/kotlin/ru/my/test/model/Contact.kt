@@ -1,7 +1,7 @@
 package ru.my.test.model
 
 class ContactView(
-    val id: Int,
+    val id: Long,
     val phone: String,
     val email: String,
 )

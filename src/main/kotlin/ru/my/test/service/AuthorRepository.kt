@@ -6,7 +6,7 @@ import ru.my.test.entity.Author
 import ru.my.test.entity.Contact
 import java.util.*
 
-interface AuthorRepository : JpaRepository<Author, Int> {
+interface AuthorRepository : JpaRepository<Author, Long> {
     fun findByContact(contact: Contact): Optional<Author>
 }
 
@@ -16,13 +16,13 @@ fun AuthorRepository.findByContactOrException(contact: Contact): Author {
     }
 }
 
-fun AuthorRepository.findOrException(id: Int): Author {
+fun AuthorRepository.findOrException(id: Long): Author {
     return this.findById(id).orElseThrow {
         NotFoundException("Не удалось найти автора с id: $id")
     }
 }
 
-fun AuthorRepository.findAllByIdOrException(authorIds: List<Int>): List<Author> {
+fun AuthorRepository.findAllByIdOrException(authorIds: List<Long>): List<Author> {
     val authors = this.findAllById(authorIds)
 
     authorIds.forEach { authorId ->

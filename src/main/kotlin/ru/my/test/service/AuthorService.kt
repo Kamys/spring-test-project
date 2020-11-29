@@ -33,7 +33,7 @@ class AuthorService(
         return authorRepository.save(author).toView()
     }
 
-    fun edit(authorId: Int, request: AuthorEditRequest): AuthorView {
+    fun edit(authorId: Long, request: AuthorEditRequest): AuthorView {
         val author = authorRepository.findOrException(authorId).apply {
             name = request.name
             books = bookService.getAllByIds(request.bookIds)
@@ -41,7 +41,7 @@ class AuthorService(
         return authorRepository.save(author).toView()
     }
 
-    fun delete(authorId: Int) {
+    fun delete(authorId: Long) {
         val author = authorRepository.findOrException(authorId)
         author.contact?.run {
             author.contact = null
@@ -50,11 +50,11 @@ class AuthorService(
         return authorRepository.delete(author)
     }
 
-    fun getById(authorId: Int): AuthorView {
+    fun getById(authorId: Long): AuthorView {
         return this.getModelById(authorId).toView()
     }
 
-    fun getModelById(authorId: Int): Author {
+    fun getModelById(authorId: Long): Author {
         return authorRepository.findOrException(authorId)
     }
 
@@ -62,11 +62,11 @@ class AuthorService(
         return AuthorView(this.id, this.name, this.books.map { it.id })
     }
 
-    fun getAllByIds(authorIds: List<Int>): List<Author> {
+    fun getAllByIds(authorIds: List<Long>): List<Author> {
         return authorRepository.findAllByIdOrException(authorIds)
     }
 
-    fun editContact(authorId: Int, request: ContactEditRequest, response: HttpServletResponse): ContactView {
+    fun editContact(authorId: Long, request: ContactEditRequest, response: HttpServletResponse): ContactView {
         val currentAuthor = authorRepository.findOrException(authorId)
         val contact: Contact = Optional.ofNullable(currentAuthor.contact)
             .map {

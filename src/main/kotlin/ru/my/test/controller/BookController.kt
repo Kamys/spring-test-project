@@ -21,7 +21,7 @@ class BookController(
 
     @GetMapping("/{bookId}")
     @ResponseStatus(HttpStatus.OK)
-    fun getBooks(@PathVariable("bookId") bookId: Int): BookView {
+    fun getBooks(@PathVariable("bookId") bookId: Long): BookView {
         return bookService.getById(bookId)
     }
 
@@ -34,7 +34,7 @@ class BookController(
     @PutMapping("/{bookId}")
     @ResponseStatus(HttpStatus.OK)
     fun editBook(
-        @PathVariable("bookId") bookId: Int,
+        @PathVariable("bookId") bookId: Long,
         @RequestBody @Valid request: BookEditRequest
     ): BookView {
         return bookService.edit(bookId, request)
@@ -43,28 +43,28 @@ class BookController(
     @DeleteMapping("/{bookId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteBook(
-        @PathVariable("bookId") bookId: Int
+        @PathVariable("bookId") bookId: Long
     ) {
         bookService.delete(bookId)
     }
 
     @GetMapping("/{bookId}/reviews")
     @ResponseStatus(HttpStatus.OK)
-    fun getReviews(@PathVariable("bookId") bookId: Int): List<ReviewView> {
+    fun getReviews(@PathVariable("bookId") bookId: Long): List<ReviewView> {
         return bookService.getReviews(bookId)
     }
 
     @PostMapping("/{bookId}/reviews")
     @ResponseStatus(HttpStatus.CREATED)
-    fun creteReview(@PathVariable("bookId") bookId: Int, @Valid @RequestBody request: ReviewAddRequest): ReviewView {
+    fun creteReview(@PathVariable("bookId") bookId: Long, @Valid @RequestBody request: ReviewAddRequest): ReviewView {
         return bookService.addReview(bookId, request)
     }
 
     @PutMapping("/{bookId}/reviews/{reviewId}")
     @ResponseStatus(HttpStatus.OK)
     fun editReview(
-        @PathVariable("bookId") bookId: Int,
-        @PathVariable("reviewId") reviewId: Int,
+        @PathVariable("bookId") bookId: Long,
+        @PathVariable("reviewId") reviewId: Long,
         @Valid @RequestBody request: ReviewEditRequest
     ): ReviewView {
         return bookService.editReview(bookId, reviewId, request)
@@ -73,8 +73,8 @@ class BookController(
     @DeleteMapping("/{bookId}/reviews/{reviewId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteReview(
-        @PathVariable("bookId") bookId: Int,
-        @PathVariable("reviewId") reviewId: Int
+        @PathVariable("bookId") bookId: Long,
+        @PathVariable("reviewId") reviewId: Long
     ) {
         return bookService.deleteReview(bookId, reviewId)
     }
