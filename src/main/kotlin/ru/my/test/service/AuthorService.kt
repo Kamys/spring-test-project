@@ -34,10 +34,6 @@ class AuthorService(
 
     fun delete(authorId: Long) {
         val author = authorRepository.findOrException(authorId)
-        author.contact?.run {
-            author.contact = null
-            contactRepository.delete(this)
-        }
         return authorRepository.delete(author)
     }
 

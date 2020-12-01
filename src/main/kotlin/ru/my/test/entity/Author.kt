@@ -15,8 +15,7 @@ class Author(
     )
     var books: List<Book> = emptyList(),
 ) : BaseEntity(id) {
-    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
-    @JoinColumn(name = "contact_id")
+    @OneToOne(mappedBy = "author", cascade = [CascadeType.ALL], orphanRemoval = true)
     var contact: Contact? = null
         set(value) {
             value?.author = this

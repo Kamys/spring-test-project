@@ -1,6 +1,7 @@
 package ru.my.test.entity
 
 import javax.persistence.Entity
+import javax.persistence.JoinColumn
 import javax.persistence.OneToOne
 import javax.persistence.Table
 
@@ -11,6 +12,7 @@ class Contact(
     var phone: String,
     var email: String,
 ) : BaseEntity(id) {
-    @OneToOne(mappedBy = "contact")
+    @OneToOne
+    @JoinColumn(name = "author_id")
     lateinit var author: Author
 }
