@@ -1,17 +1,20 @@
 version: '3.1'
 
 services:
-
   postgres:
     image: postgres
     restart: always
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: 123456
+      POSTGRES_USER: ${JDBC_USERNAME}
+      POSTGRES_PASSWORD: ${JDBC_PASSWORD}
       POSTGRES_DB: library
     ports:
       - 5432:5432
   backend:
     build: .
+    environment:
+      JDBC_URL: ${JDBC_URL}
+      JDBC_USERNAME: ${JDBC_USERNAME}
+      JDBC_PASSWORD: ${JDBC_PASSWORD}
     ports:
       - 8080:8080
