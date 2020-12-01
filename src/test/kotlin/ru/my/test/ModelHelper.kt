@@ -28,7 +28,7 @@ class ModelHelper {
         name: String = faker.book().title(),
         authors: List<Author> = emptyList()
     ): Book {
-        val book = Book(name = name, authors = authors)
+        val book = Book(name = name, authors = authors.toMutableList())
         bookRepository.save(book)
         return book
     }
@@ -38,7 +38,7 @@ class ModelHelper {
         name: String = faker.book().author(),
         books: List<Book> = emptyList()
     ): Author {
-        val author = Author(name = name, books = books)
+        val author = Author(name = name, books = books.toMutableList())
         authorRepository.save(author)
         return author
     }

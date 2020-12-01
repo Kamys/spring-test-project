@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import ru.my.test.AbstractIntegrationTest
+import ru.my.test.entity.Author
+import ru.my.test.entity.Book
 import ru.my.test.entity.BookRating
 import ru.my.test.entity.Review
 import ru.my.test.model.*
@@ -51,10 +53,13 @@ class BookControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `GET books with author ids`() {
-        val authorFirst = modelHelper.createAuthor()
-        val authorSecond = modelHelper.createAuthor()
-
-        val bookFirst = modelHelper.createBook(authors = listOf(authorFirst, authorSecond))
+        val bookFirst = transactional {
+            val book =  Book(name = "Book 1").apply {
+                addAuthor(Author(name = "Author 1"))
+                addAuthor(Author(name = "Author 2"))
+            }
+            bookRepository.save(book)
+        }
         val bookSecond = modelHelper.createBook()
 
         val response = mvc.get("/books")
@@ -65,7 +70,7 @@ class BookControllerTest : AbstractIntegrationTest() {
         response.size.shouldBe(2)
         response.findOrException { it.id == bookFirst.id }
             .authorIds
-            .shouldContainExactly(listOf(authorFirst.id, authorSecond.id))
+            .shouldContainExactly(bookFirst.authors.map { it.id })
         response.findOrException { it.id == bookSecond.id }
             .authorIds
             .shouldBeEmpty()
@@ -101,17 +106,21 @@ class BookControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `GET book with author ids`() {
-        val authorFirst = modelHelper.createAuthor()
-        val authorSecond = modelHelper.createAuthor()
-        val bookFirst = modelHelper.createBook(authors = listOf(authorFirst, authorSecond))
+        val book = transactional {
+            val book =  Book(name = "Book 1").apply {
+                addAuthor(Author(name = "Author 1"))
+                addAuthor(Author(name = "Author 2"))
+            }
+            bookRepository.save(book)
+        }
 
-        val response = mvc.get("/books/${bookFirst.id}")
+        val response = mvc.get("/books/${book.id}")
             .andExpect(status().isOk)
             .andReturn()
             .asObject<BookView>()
 
         response.authorIds
-            .shouldContainExactly(listOf(authorFirst.id, authorSecond.id))
+            .shouldContainExactly(book.authors.map { it.id })
     }
 
     @Test
@@ -283,14 +292,18 @@ class BookControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `PUT book edit authorIds`() {
-        val authorFirst = modelHelper.createAuthor()
-        val authorSecond = modelHelper.createAuthor()
-        val authorThird = modelHelper.createAuthor()
+        val editedBook = transactional {
+            Book(name = "Book 1").apply {
+                addAuthor(Author(name = "Author 1"))
+                addAuthor(Author(name = "Author 2"))
+                addAuthor(Author(name = "Author 3"))
+                bookRepository.save(this)
+            }
+        }
 
-        val editedBook = modelHelper.createBook(authors = listOf(authorFirst, authorSecond))
         val bookSecond = modelHelper.createBook()
 
-        val newAuthorIds = listOf(authorThird.id)
+        val newAuthorIds = listOf(editedBook.authors[2].id)
         val request = BookEditRequest(authorIds = newAuthorIds, name = "New name")
 
         val response = mvc.put("/books/${editedBook.id}", request.asJson())
@@ -346,18 +359,23 @@ class BookControllerTest : AbstractIntegrationTest() {
 
     @Test
     fun `DELETE book with authors`() {
-        val authorFirst = modelHelper.createAuthor()
-        val authorSecond = modelHelper.createAuthor()
-
-        val bookForDelete = modelHelper.createBook(authors = listOf(authorFirst, authorSecond))
+        val bookForDelete = transactional {
+            val book = Book(name = "Book 1").apply {
+                addAuthor(Author(name = "Author 1"))
+                addAuthor(Author(name = "Author 2"))
+            }
+            bookRepository.save(book)
+        }
 
         mvc.delete("/books/${bookForDelete.id}").andExpect(status().isNoContent)
 
-        val allBook = bookRepository.findAll()
-        allBook.shouldBeEmpty()
+        transactional {
+            val allBook = bookRepository.findAll()
+            allBook.shouldBeEmpty()
 
-        val allAuthors = authorRepository.findAll()
-        allAuthors.size.shouldBe(2)
+            val allAuthors = authorRepository.findAll()
+            allAuthors.size.shouldBe(2)
+        }
     }
 
     @Test
@@ -376,6 +394,24 @@ class BookControllerTest : AbstractIntegrationTest() {
         transactional {
             bookRepository.count().shouldBe(0)
             reviewRepository.count().shouldBe(0)
+        }
+    }
+
+    @Test
+    fun `DELETE book don't delete author`() {
+        val bookForDelete = transactional {
+            Book(name = "Book 1").apply {
+                addAuthor(Author(name = "Author 1"))
+                addAuthor(Author(name = "Author 2"))
+                bookRepository.save(this)
+            }
+        }
+
+        mvc.delete("/books/${bookForDelete.id}").andExpect(status().isNoContent)
+
+        transactional {
+            bookRepository.count().shouldBe(0)
+            authorRepository.count().shouldBe(2)
         }
     }
 }

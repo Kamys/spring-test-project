@@ -21,7 +21,7 @@ class BookService(
         val book = Book(name = request.name)
 
         if (!request.authorIds.isNullOrEmpty()) {
-            book.authors = authorService.getAllByIds(request.authorIds)
+            book.authors = authorService.getAllByIds(request.authorIds).toMutableList()
         }
 
         return bookRepository.save(book).toView()
@@ -30,7 +30,7 @@ class BookService(
     fun edit(bookId: Long, request: BookEditRequest): BookView {
         val book = bookRepository.findOrException(bookId).apply {
             name = request.name
-            authors = authorService.getAllByIds(request.authorIds)
+            authors = authorService.getAllByIds(request.authorIds).toMutableList()
         }
         return bookRepository.save(book).toView()
     }

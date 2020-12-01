@@ -7,16 +7,20 @@ import javax.persistence.*
 class Book(
     id: Long = 0,
     var name: String,
-    @ManyToMany
+    @ManyToMany(cascade = [CascadeType.PERSIST])
     @JoinTable(
         name = "author_book",
         joinColumns = [JoinColumn(name = "book_id")],
-        inverseJoinColumns = [JoinColumn(name = "author_id")]
+        inverseJoinColumns = [JoinColumn(name = "author_id")],
     )
-    var authors: List<Author> = emptyList(),
+    var authors: MutableList<Author> = mutableListOf(),
     @OneToMany(mappedBy = "book", cascade = [CascadeType.ALL], orphanRemoval = true)
     var reviews: MutableList<Review> = mutableListOf(),
 ) : BaseEntity(id) {
+
+    fun addAuthor(author: Author) {
+        authors.add(author)
+    }
 
     fun addReview(review: Review) {
         reviews.add(review)

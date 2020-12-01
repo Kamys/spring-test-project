@@ -127,7 +127,7 @@ class ReviewControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
-    fun `DELETE return 200 if book deleted`() {
+    fun `DELETE return 200 if review deleted`() {
         val book = transactional {
             modelHelper.createBook().apply {
                 addReview(Review(text = "Review 1", rating = BookRating.GOOD))
