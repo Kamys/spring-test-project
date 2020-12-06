@@ -7,29 +7,26 @@ import ru.my.test.model.NotFoundException
 import java.util.*
 
 interface AuthorRepository : JpaRepository<Author, Long> {
-    fun findByContact(contact: Contact): Optional<Author>
-}
-
-fun AuthorRepository.findByContactOrException(contact: Contact): Author {
-    return this.findByContact(contact).orElseThrow {
-        NotFoundException("Не удалось найти автора с Contact: $contact")
-    }
-}
-
-fun AuthorRepository.findOrException(id: Long): Author {
-    return this.findById(id).orElseThrow {
-        NotFoundException("Не удалось найти автора с id: $id")
-    }
-}
-
-fun AuthorRepository.findAllByIdOrException(authorIds: List<Long>): List<Author> {
-    val authors = this.findAllById(authorIds)
-
-    authorIds.forEach { authorId ->
-        if (!authors.any { it.id == authorId }) {
-            throw NotFoundException("Не удалось найти автора с id: $authorId")
+    @JvmDefault
+    fun findOrException(id: Long): Author {
+        return this.findById(id).orElseThrow {
+            NotFoundException("Не удалось найти автора с id: $id")
         }
     }
 
-    return authors
+    @JvmDefault
+    fun findAllByIdOrException(authorIds: List<Long>): List<Author> {
+        val authors = this.findAllById(authorIds)
+
+        authorIds.forEach { authorId ->
+            if (!authors.any { it.id == authorId }) {
+                throw NotFoundException("Не удалось найти автора с id: $authorId")
+            }
+        }
+
+        return authors
+    }
 }
+
+
+
