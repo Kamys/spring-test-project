@@ -15,6 +15,7 @@ enum class BookRating {
 class Review(
     id: Long = 0,
     var text: String,
+    @Enumerated(EnumType.STRING)
     var rating: BookRating,
 ) : BaseEntity(id) {
     @ManyToOne(fetch = FetchType.LAZY)
