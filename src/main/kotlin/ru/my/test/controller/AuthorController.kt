@@ -56,4 +56,11 @@ class AuthorController(
     ): ContactView {
         return authorService.editContact(authorId, request, response)
     }
+
+    @GetMapping("/{authorId}/contacts")
+    fun getContact(
+        @PathVariable("authorId") authorId: Long,
+    ): ContactView {
+        return authorService.getContact(authorId)
+    }
 }

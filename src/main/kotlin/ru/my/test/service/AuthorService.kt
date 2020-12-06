@@ -78,4 +78,8 @@ class AuthorService(
     fun Contact.toView(): ContactView {
         return ContactView(this.id, this.phone, this.email)
     }
+
+    fun getContact(authorId: Long): ContactView {
+        return contactRepository.findByAuthorIdOrException(authorId).toView()
+    }
 }
