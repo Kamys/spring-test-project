@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.*
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.MvcResult
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import ru.my.test.ModelHelper
+import org.springframework.transaction.support.TransactionTemplate
 import java.nio.charset.StandardCharsets
 
 @SpringBootTest(classes = [Application::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -23,6 +25,13 @@ abstract class AbstractIntegrationTest {
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
+
+    @Autowired
+    lateinit var transactionTemplate: TransactionTemplate
+
+    fun <R> transactional(block: () -> R): R {
+        return transactionTemplate.execute { block.invoke() }!!
+    }
 
     protected val faker = Faker()
 
@@ -38,9 +47,9 @@ abstract class AbstractIntegrationTest {
 
     fun Any.asJson(): String = objectMapper.writeValueAsString(this)
 
-    @Throws(NullPointerException::class)
+    @Throws(Exception::class)
     fun <T> Iterable<T>.findOrException(predicate: (T) -> Boolean): T {
-        return this.find(predicate) ?: throw NullPointerException("Failed find element")
+        return this.find(predicate) ?: throw Exception("Failed find element")
     }
 
     fun MockMvc.get(

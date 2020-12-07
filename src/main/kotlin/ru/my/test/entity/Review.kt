@@ -13,10 +13,12 @@ enum class BookRating {
 @Entity
 @Table(name = "reviews")
 class Review(
-    id: Int = 0,
+    id: Long = 0,
     var text: String,
+    @Enumerated(EnumType.STRING)
     var rating: BookRating,
-    @ManyToOne
+) : BaseEntity(id) {
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
-    var book: Book,
-) : BaseEntity(id)
+    lateinit var book: Book
+}

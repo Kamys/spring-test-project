@@ -1,7 +1,5 @@
 package ru.my.test.helper.validation
 
-import org.springframework.beans.factory.annotation.Autowired
-import ru.my.test.service.AuthorService
 import ru.my.test.service.BookService
 import javax.validation.Constraint
 import javax.validation.ConstraintValidator
@@ -21,7 +19,6 @@ annotation class UniqueBookName(
 )
 
 class UniqueBookNameValidator(
-    @Autowired
     private val bookService: BookService
 ) : ConstraintValidator<UniqueBookName, String?> {
 

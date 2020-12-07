@@ -8,10 +8,10 @@ import javax.validation.constraints.NotNull
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 class BookView(
-    val id: Int,
+    val id: Long,
     val name: String,
-    val authorIds: List<Int> = emptyList(),
-    var reviews: List<ReviewView> = emptyList(),
+    val authorIds: List<Long> = mutableListOf(),
+    val reviews: List<ReviewView> = mutableListOf(),
 )
 
 class BookAddRequest(
@@ -19,12 +19,12 @@ class BookAddRequest(
     @field:UniqueBookName
     val name: String,
     @field:UniqueElements
-    val authorIds: List<Int>? = null,
+    val authorIds: List<Long> = mutableListOf(),
 )
 
 class BookEditRequest(
     @field:UniqueBookName
-    val name: String? = null,
+    val name: String,
     @field:UniqueElements
-    val authorIds: List<Int>? = null,
+    val authorIds: List<Long> = mutableListOf(),
 )

@@ -1,6 +1,5 @@
 package ru.my.test.controller
 
-import javassist.NotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.BindingResult
@@ -20,9 +19,16 @@ class ModelControllerAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun notFoundException(exception: NotFoundException): ApiError {
         return ApiError(
-            type = ErrorType.PROCESS_ERROR,
-            status = HttpStatus.NOT_FOUND.value(),
             title = "Ресурс не найден",
+            detail = exception.message
+        )
+    }
+
+    @ExceptionHandler(value = [BadRequest::class])
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun notFoundException(exception: BadRequest): ApiError {
+        return ApiError(
+            title = "Ошибка запроса",
             detail = exception.message
         )
     }
@@ -41,8 +47,6 @@ class ModelControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun httpMessageNotReadableException(exception: HttpMessageNotReadableException): ApiError {
         return ApiError(
-            type = ErrorType.PROCESS_ERROR,
-            status = HttpStatus.NOT_FOUND.value(),
             title = ErrorMessages.JSON_NOT_VALID.text,
             detail = exception.message
         )

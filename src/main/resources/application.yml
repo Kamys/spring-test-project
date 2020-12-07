@@ -1,12 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://postgres:5432/postgres
-    username: root
-    password: 123456
+    url: ${JDBC_URL}
+    username: ${JDBC_USERNAME}
+    password: ${JDBC_PASSWORD}
     hikari:
       schema: public
-  jpa:
-    show-sql: true
 
 
 

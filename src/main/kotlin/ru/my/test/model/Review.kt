@@ -5,24 +5,20 @@ import ru.my.test.entity.BookRating
 import javax.validation.constraints.NotNull
 
 class ReviewView(
-    val id: Int,
+    val id: Long,
     val text: String,
-    val rating: BookRating,
-    val bookId: Int,
+    val rating: BookRating
 )
 
 class ReviewAddRequest(
-    @field:Length(min = 5, max=200)
-    val text: String?,
+    @field:Length(min = 5, max = 200)
+    val text: String,
     @field:NotNull
     val rating: BookRating,
-    @field:NotNull
-    val bookId: Int,
 )
 
 class ReviewEditRequest(
-    @field:Length(min = 5, max=200)
-    val text: String? = null,
-    val rating: BookRating? = null,
-    val bookId: Int? = null,
+    @field:Length(min = 5, max = 200)
+    val text: String,
+    val rating: BookRating,
 )

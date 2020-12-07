@@ -42,6 +42,12 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "1.8"
     }
+    compileKotlin {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjvm-default=enable")
+            jvmTarget = "1.8"
+        }
+    }
     test {
         useJUnitPlatform()
     }

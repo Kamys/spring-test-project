@@ -1,13 +1,18 @@
 package ru.my.test.entity
 
-import javax.persistence.*
+import javax.persistence.Entity
+import javax.persistence.JoinColumn
+import javax.persistence.OneToOne
+import javax.persistence.Table
 
 @Entity
 @Table(name = "contacts")
 class Contact(
-    id: Int = 0,
+    id: Long = 0,
     var phone: String,
     var email: String,
-    @OneToOne(mappedBy = "contact")
-    var author: Author
-) : BaseEntity(id)
+) : BaseEntity(id) {
+    @OneToOne
+    @JoinColumn(name = "author_id")
+    lateinit var author: Author
+}

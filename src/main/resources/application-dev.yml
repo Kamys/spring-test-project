@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: root
+    password: 123456
+    hikari:
+      schema: public
+  jpa:
+    show-sql: true
+
+
+
+

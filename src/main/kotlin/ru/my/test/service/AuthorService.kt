@@ -1,24 +1,20 @@
 package ru.my.test.service
 
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.my.test.entity.Author
 import ru.my.test.entity.Contact
-import ru.my.test.model.AuthorAddRequest
-import ru.my.test.model.AuthorEditRequest
-import ru.my.test.model.AuthorView
+import ru.my.test.model.*
+import java.util.*
+import javax.servlet.http.HttpServletResponse
 
 @Service
 @Transactional
 class AuthorService(
     private val authorRepository: AuthorRepository,
+    private val contactRepository: ContactRepository,
 ) {
-
-    @Autowired
-    private lateinit var bookService: BookService
-    @Autowired
-    private lateinit var contactService: ContactService
 
     fun getAll(): List<AuthorView> {
         return authorRepository.findAll().map { it.toView() }
@@ -26,43 +22,26 @@ class AuthorService(
 
     fun add(request: AuthorAddRequest): AuthorView {
         val author = Author(name = request.name)
-
-        if (!request.bookIds.isNullOrEmpty()) {
-            author.books = bookService.getAllByIds(request.bookIds)
-        }
-
         return authorRepository.save(author).toView()
     }
 
-    fun edit(authorId: Int, request: AuthorEditRequest): AuthorView {
-        val author = authorRepository.findOrException(authorId)
-        if (!request.name.isNullOrEmpty()) {
-            author.name = request.name
-        }
-        if (!request.bookIds.isNullOrEmpty()) {
-            author.books = bookService.getAllByIds(request.bookIds)
+    fun edit(authorId: Long, request: AuthorEditRequest): AuthorView {
+        val author = authorRepository.findOrException(authorId).apply {
+            name = request.name
         }
         return authorRepository.save(author).toView()
     }
 
-    fun delete(authorId: Int) {
+    fun delete(authorId: Long) {
         val author = authorRepository.findOrException(authorId)
-        val contact = author.contact
-        if (contact != null) {
-            contactService.delete(contact.id)
-        }
         return authorRepository.delete(author)
     }
 
-    fun findModelByContact(contact: Contact): Author {
-        return authorRepository.findByContactOrException(contact)
-    }
-
-    fun getById(authorId: Int): AuthorView {
+    fun getById(authorId: Long): AuthorView {
         return this.getModelById(authorId).toView()
     }
 
-    fun getModelById(authorId: Int): Author{
+    fun getModelById(authorId: Long): Author {
         return authorRepository.findOrException(authorId)
     }
 
@@ -70,7 +49,37 @@ class AuthorService(
         return AuthorView(this.id, this.name, this.books.map { it.id })
     }
 
-    fun getAllByIds(authorIds: List<Int>): List<Author> {
+    fun getAllByIds(authorIds: List<Long>): List<Author> {
         return authorRepository.findAllByIdOrException(authorIds)
+    }
+
+    fun editContact(authorId: Long, request: ContactEditRequest, response: HttpServletResponse): ContactView {
+        val currentAuthor = authorRepository.findOrException(authorId)
+        val contact: Contact = Optional.ofNullable(currentAuthor.contact)
+            .map {
+                response.status = HttpStatus.OK.value()
+                it.apply {
+                    phone = request.phone
+                    email = request.email
+                }
+            }
+            .orElseGet {
+                response.status = HttpStatus.CREATED.value()
+                Contact(
+                    phone = request.phone,
+                    email = request.email,
+                ).apply { author = currentAuthor }
+            }
+
+        return contactRepository.save(contact).toView()
+    }
+
+
+    fun Contact.toView(): ContactView {
+        return ContactView(this.id, this.phone, this.email)
+    }
+
+    fun getContact(authorId: Long): ContactView {
+        return contactRepository.findByAuthorIdOrException(authorId).toView()
     }
 }
