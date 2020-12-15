@@ -38,6 +38,7 @@ class AuthorService(
     }
 
     fun getById(authorId: Long): AuthorView {
+        // не очень понятно почему тут getModelById из-за model и из-за того, что в edit методе в принципе это не переиспользуется
         return this.getModelById(authorId).toView()
     }
 
@@ -45,7 +46,9 @@ class AuthorService(
         return authorRepository.findOrException(authorId)
     }
 
-    fun Author.toView(): AuthorView {
+    // метод должен быть private, это же относится и к другим методам, которые используются только на уровне
+    // конкретных сервисов
+    private fun Author.toView(): AuthorView {
         return AuthorView(this.id, this.name, this.books.map { it.id })
     }
 

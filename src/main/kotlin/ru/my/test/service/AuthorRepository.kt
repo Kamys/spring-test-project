@@ -19,6 +19,7 @@ interface AuthorRepository : JpaRepository<Author, Long> {
         val authors = this.findAllById(authorIds)
 
         authorIds.forEach { authorId ->
+            // алгоритм тот же, но возможно красивее было бы использовать if (authors.none {})
             if (!authors.any { it.id == authorId }) {
                 throw NotFoundException("Не удалось найти автора с id: $authorId")
             }

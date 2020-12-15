@@ -59,6 +59,7 @@ class BookService(
     fun addReview(bookId: Long, request: ReviewAddRequest): ReviewView {
         val book = bookRepository.findOrException(bookId)
         val review = Review(text = request.text, rating = request.rating)
+        // непонятно, для чего тогда нужен addReview на уровне book
         review.book = book
         reviewRepository.save(review)
         return review.toView()

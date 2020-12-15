@@ -20,7 +20,7 @@ class AuthorController(
     }
 
     @GetMapping("/{authorId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.OK) //ок тут не обязателен, но если проставляешь - то для единообразий нужен во всех
     fun getAuthors(@PathVariable("authorId") authorId: Long): AuthorView {
         return authorService.getById(authorId)
     }
@@ -49,6 +49,8 @@ class AuthorController(
     }
 
     @PutMapping("/{authorId}/contacts")
+    // тут немного странно, что на уровне api отношение one-to-one перенеслись на отдельный подуровень
+    // но в целом это абстрактная задача, ничего критичного
     fun editContact(
         @PathVariable("authorId") authorId: Long,
         @RequestBody @Valid request: ContactEditRequest,

@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.UniqueElements
 import ru.my.test.helper.validation.UniqueBookName
 import javax.validation.constraints.NotNull
 
+// JsonIdentityInfo ещё нужен?
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 class BookView(
     val id: Long,
@@ -19,6 +20,7 @@ class BookAddRequest(
     @field:UniqueBookName
     val name: String,
     @field:UniqueElements
+    // дефолтные значения работают в этом случае?
     val authorIds: List<Long> = mutableListOf(),
 )
 
