@@ -11,7 +11,6 @@ import ru.my.test.model.ContactEditRequest
 import ru.my.test.model.ContactView
 import ru.my.test.service.AuthorRepository
 import ru.my.test.service.ContactRepository
-import ru.my.test.service.findOrException
 
 
 class ContactControllerTest : AbstractIntegrationTest() {

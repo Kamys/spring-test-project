@@ -5,6 +5,8 @@ import ru.my.test.entity.Contact
 import ru.my.test.model.NotFoundException
 import java.util.*
 
+// так конечно можно, но обычно не происходит
+// если у тебя author - главная сущность над contact, лучше оставить author repository и брать контакт из сущности author
 interface ContactRepository : JpaRepository<Contact, Long> {
     fun findByAuthorId(authorId: Long): Optional<Contact>
 

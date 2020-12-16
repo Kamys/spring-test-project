@@ -11,10 +11,10 @@ import ru.my.test.entity.Contact
 import ru.my.test.model.*
 import ru.my.test.service.AuthorRepository
 import ru.my.test.service.ContactRepository
-import ru.my.test.service.findOrException
 
 
 class AuthorControllerTest : AbstractIntegrationTest() {
+    // lateinit поля можно убрать в конструктор
     @Autowired
     private lateinit var authorRepository: AuthorRepository
 
@@ -139,6 +139,7 @@ class AuthorControllerTest : AbstractIntegrationTest() {
     }
 
     @Test
+    // should return 204
     fun `DELETE return 200 if author deleted`() {
         val authorForDelete = modelHelper.createAuthor()
         val author = modelHelper.createAuthor()

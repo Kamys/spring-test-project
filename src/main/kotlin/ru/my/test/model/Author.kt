@@ -9,6 +9,10 @@ class AuthorView(
 )
 
 class AuthorAddRequest(
+    // эта аннотация работает?
+    // насколько помню, jackson не сможет преобразовать json в этот объект, если поле не придёт,
+    // а hibernate validator не сможет проверить, что поле не null, пока не сформирован объект
+    // если это всё таки работает, то почему этой аннотации нет на AuthorEditRequest?
     @field:NotNull
     val name: String
 )
